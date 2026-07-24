@@ -856,6 +856,22 @@ img { max-width: 100%; }
 
 .footer-copy { font-size: .75rem; opacity: .45; margin-top: 18px; }
 
+.footer-credit {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: .78rem;
+}
+
+.footer-verse { color: var(--coral-light); font-style: italic; }
+
+.footer-studio { opacity: .6; }
+
+.footer-studio strong { color: var(--white); opacity: .9; }
+
 /* ============ WA FLOAT ============ */
 .wa-float {
   position: fixed;
