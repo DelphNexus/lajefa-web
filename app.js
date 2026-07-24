@@ -458,6 +458,59 @@ document.querySelector(".menu").addEventListener("click", (e) => {
   if (card) openModal(card.dataset.type, card.dataset.id);
 });
 
+/* ===== CÓDIGOS DE DESCUENTO =====
+   Para agregar otro código: copia la línea y cambia nombre y porcentaje.
+   Se aplica sobre el subtotal del pedido (el domicilio se cobra aparte). */
+const DISCOUNTS = {
+  LAJEFA10: { percent: 10 },
+};
+
+let appliedCode = null;
+try { appliedCode = localStorage.getItem("lajefa-code") || null; } catch { appliedCode = null; }
+if (appliedCode && !DISCOUNTS[appliedCode]) appliedCode = null;
+
+function discountAmount(subtotal) {
+  if (!appliedCode) return 0;
+  return Math.round(subtotal * DISCOUNTS[appliedCode].percent) / 100;
+}
+
+function promoFeedback(texto, ok) {
+  const el = document.getElementById("promoMsg");
+  el.textContent = texto;
+  el.className = `promo-msg ${ok ? "ok" : "err"}`;
+  el.hidden = false;
+}
+
+function applyCode() {
+  const input = document.getElementById("promoInput");
+  const code = input.value.trim().toUpperCase();
+
+  if (!code) return promoFeedback("Escribe un código para aplicarlo.", false);
+
+  if (!DISCOUNTS[code]) {
+    appliedCode = null;
+    localStorage.removeItem("lajefa-code");
+    promoFeedback("Ese código no existe o ya venció 😕", false);
+    return renderCart();
+  }
+
+  appliedCode = code;
+  localStorage.setItem("lajefa-code", code);
+  input.value = code;
+  promoFeedback(`✅ ¡Código aplicado! ${DISCOUNTS[code].percent}% de descuento`, true);
+  renderCart();
+}
+
+document.getElementById("promoApply").addEventListener("click", applyCode);
+document.getElementById("promoInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); applyCode(); }
+});
+
+if (appliedCode) {
+  document.getElementById("promoInput").value = appliedCode;
+  promoFeedback(`✅ ¡Código aplicado! ${DISCOUNTS[appliedCode].percent}% de descuento`, true);
+}
+
 /* ===== CARRITO ===== */
 const cartOverlay = document.getElementById("cartOverlay");
 
@@ -477,12 +530,22 @@ cartOverlay.addEventListener("click", (e) => { if (e.target === cartOverlay) clo
 
 function renderCart() {
   const itemsEl = document.getElementById("cartItems");
-  const total = cart.reduce((s, i) => s + i.unit * i.qty, 0);
+  const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
   const count = cart.reduce((s, i) => s + i.qty, 0);
+  const descuento = discountAmount(subtotal);
+  const total = subtotal - descuento;
 
   document.getElementById("cartCount").textContent = count;
   document.getElementById("cartEmpty").style.display = cart.length ? "none" : "block";
   document.getElementById("cartFooter").hidden = !cart.length;
+
+  document.getElementById("subtotalLine").hidden = !descuento;
+  document.getElementById("discountLine").hidden = !descuento;
+  document.getElementById("cartSubtotal").textContent = money(subtotal);
+  document.getElementById("cartDiscount").textContent = `-${money(descuento)}`;
+  if (descuento) {
+    document.getElementById("discountLabel").textContent = `Descuento (${appliedCode} · ${DISCOUNTS[appliedCode].percent}%)`;
+  }
   document.getElementById("cartTotal").textContent = money(total);
 
   itemsEl.innerHTML = cart.map((item, idx) => {
@@ -529,7 +592,9 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
 
   const name = document.getElementById("custName").value.trim();
   const address = document.getElementById("custAddress").value.trim();
-  const total = cart.reduce((s, i) => s + i.unit * i.qty, 0);
+  const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
+  const descuento = discountAmount(subtotal);
+  const total = subtotal - descuento;
 
   let msg = "🍔 *NUEVO PEDIDO — LA JEFA DARKITCHEN*\n\n";
 
@@ -541,6 +606,10 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
     if (item.note) msg += `   📝 ${item.note}\n`;
   });
 
+  if (descuento) {
+    msg += `\nSubtotal: ${money(subtotal)}`;
+    msg += `\n🎟️ Descuento *${appliedCode}* (${DISCOUNTS[appliedCode].percent}%): -${money(descuento)}`;
+  }
   msg += `\n💰 *Total: ${money(total)}*`;
   msg += `\n_(sin incluir domicilio)_\n`;
   if (name) msg += `\n👤 Nombre: ${name}`;

@@ -1321,12 +1321,81 @@ img { max-width: 100%; }
 
 .cart-fields input:focus { border-color: var(--coral); box-shadow: 0 0 0 4px rgba(242,145,124,.15); }
 
+/* Código de descuento */
+.promo-code { margin-bottom: 14px; }
+
+.promo-code label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 7px;
+}
+
+.promo-code-row { display: flex; gap: 8px; }
+
+.promo-code-row input {
+  flex: 1;
+  min-width: 0;
+  border: 2px dashed var(--coral);
+  border-radius: 14px;
+  padding: 11px 15px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  outline: none;
+  background: var(--cream);
+  transition: .2s;
+}
+
+.promo-code-row input::placeholder { letter-spacing: 0; font-weight: 500; text-transform: none; }
+
+.promo-code-row input:focus { border-style: solid; box-shadow: 0 0 0 4px rgba(242,145,124,.15); }
+
+.promo-code-row button {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 14px;
+  padding: 0 20px;
+  background: var(--purple);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.promo-code-row button:hover { background: var(--coral-hot); color: var(--purple-deep); }
+
+.promo-msg { font-size: .8rem; font-weight: 700; margin-top: 7px; }
+
+.promo-msg.ok { color: #2e9e5b; }
+
+.promo-msg.err { color: #c44; }
+
+/* Totales */
+.cart-total-box { margin-bottom: 4px; }
+
+.cart-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: .88rem;
+  color: #6b5a80;
+  padding: 2px 0;
+}
+
+.cart-line.discount { color: #2e9e5b; font-weight: 700; }
+
 .cart-total {
   display: flex;
   justify-content: space-between;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--purple);
+  padding-top: 6px;
   margin-bottom: 4px;
 }
 
