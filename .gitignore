@@ -1,0 +1,7 @@
+.claude/
+.DS_Store
+images/*.png
+!images/brand/*.png
+logo.psd
+deploy.sh
+FOTOS-IA.md
