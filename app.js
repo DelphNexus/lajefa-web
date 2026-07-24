@@ -168,6 +168,23 @@ const io = new IntersectionObserver((entries) => {
 
 document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
+/* Red de seguridad: si el visitante salta de golpe (menú, ancla, recarga a
+   media página), el observador nunca ve esos bloques y quedarían invisibles.
+   Todo lo que ya pasó por pantalla se muestra sí o sí. */
+function revealPassed() {
+  document.querySelectorAll(".reveal:not(.in)").forEach(el => {
+    if (el.getBoundingClientRect().top < window.innerHeight) {
+      el.classList.add("in");
+      io.unobserve(el);
+    }
+  });
+}
+
+addEventListener("scroll", revealPassed, { passive: true });
+addEventListener("load", revealPassed);
+addEventListener("hashchange", revealPassed);
+revealPassed();
+
 /* ===== SCROLLSPY ===== */
 const spyLinks = document.querySelectorAll("[data-spy]");
 const sections = ["hamburguesas", "combos", "picar", "bebidas"].map(id => document.getElementById(id));

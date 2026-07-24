@@ -303,6 +303,13 @@ img { max-width: 100%; }
   .ring, .mini-checker { display: none; }
 }
 
+/* En móvil las fotos van arriba, junto al logo: nunca sobre el texto */
+@media (max-width: 760px) {
+  .ff1 { top: 3%; left: 2%; width: 78px; height: 78px; }
+  .ff2 { top: 3%; right: 2%; bottom: auto; width: 78px; height: 78px; }
+  .ff3 { display: none; }
+}
+
 /* Stickers flotantes del hero */
 .hero-sticker {
   position: absolute;
@@ -551,7 +558,7 @@ img { max-width: 100%; }
 .section-sub strong { color: var(--coral-hot); }
 
 /* Pan strip */
-.pan-strip { margin: -84px auto 60px; position: relative; z-index: 5; max-width: 950px; }
+.pan-strip { margin: 0 auto 56px; position: relative; max-width: 950px; }
 
 .pan-strip-inner {
   display: flex;
@@ -1529,8 +1536,8 @@ img { max-width: 100%; }
   .hero { padding: 40px 18px 100px; }
   .hero-claims { flex-direction: column; gap: 12px; padding: 16px 26px; }
   .stat-sep { width: 60px; height: 1px; }
-  .pan-strip { margin-top: -74px; }
-  .pan-strip-inner { border-radius: 24px; }
+  .pan-strip-inner { border-radius: 24px; padding: 16px 18px; gap: 8px; }
+  .pan-strip-title { width: 100%; text-align: center; margin-bottom: 2px; }
   .findus-card { padding: 28px 20px; }
   .findus-mascot { width: 200px; }
   .modal-overlay { align-items: flex-end; padding: 0; }
