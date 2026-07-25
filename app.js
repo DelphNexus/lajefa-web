@@ -586,12 +586,90 @@ document.getElementById("cartItems").addEventListener("click", (e) => {
   if (minus || plus || remove) { saveCart(); renderCart(); }
 });
 
+/* ===== DATOS DEL PEDIDO (obligatorios) ===== */
+let orderMode = null;   // Delivery · Retiro en local · Comer en el local
+let payMethod = null;   // Efectivo · Transferencia · DeUna · Tarjeta
+
+const addressBlock = document.getElementById("addressBlock");
+const cashBlock = document.getElementById("cashBlock");
+const formError = document.getElementById("formError");
+
+function pickChoice(container, attr, value) {
+  container.querySelectorAll(".choice").forEach(b =>
+    b.classList.toggle("selected", b.dataset[attr] === value));
+}
+
+document.getElementById("modeOptions").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-mode]");
+  if (!btn) return;
+  orderMode = btn.dataset.mode;
+  pickChoice(document.getElementById("modeOptions"), "mode", orderMode);
+  addressBlock.hidden = orderMode !== "Delivery";
+  clearFieldErrors();
+});
+
+document.getElementById("payOptions").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-pay]");
+  if (!btn) return;
+  payMethod = btn.dataset.pay;
+  pickChoice(document.getElementById("payOptions"), "pay", payMethod);
+  cashBlock.hidden = payMethod !== "Efectivo";
+  clearFieldErrors();
+});
+
+function clearFieldErrors() {
+  document.querySelectorAll(".field-error").forEach(el => el.classList.remove("field-error"));
+  formError.hidden = true;
+}
+
+["custName", "custAddress"].forEach(id =>
+  document.getElementById(id).addEventListener("input", clearFieldErrors));
+
+/* Devuelve null si está todo OK, o el mensaje de lo que falta */
+function validateOrder() {
+  const name = document.getElementById("custName").value.trim();
+  const address = document.getElementById("custAddress").value.trim();
+  const faltan = [];
+
+  if (!orderMode) {
+    faltan.push("elegir cómo lo quieres");
+    document.getElementById("modeOptions").classList.add("field-error");
+  }
+  if (!name) {
+    faltan.push("tu nombre");
+    document.getElementById("custName").classList.add("field-error");
+  }
+  if (orderMode === "Delivery" && !address) {
+    faltan.push("tu dirección");
+    document.getElementById("custAddress").classList.add("field-error");
+  }
+  if (!payMethod) {
+    faltan.push("la forma de pago");
+    document.getElementById("payOptions").classList.add("field-error");
+  }
+
+  if (!faltan.length) return null;
+  return `Falta ${faltan.join(", ").replace(/, ([^,]*)$/, " y $1")} 😊`;
+}
+
 /* ===== CHECKOUT WHATSAPP ===== */
 document.getElementById("checkoutBtn").addEventListener("click", () => {
   if (!cart.length) return;
 
+  clearFieldErrors();
+  const problema = validateOrder();
+  if (problema) {
+    formError.textContent = problema;
+    formError.hidden = false;
+    const primero = document.querySelector(".field-error");
+    primero.scrollIntoView({ block: "center", behavior: "smooth" });
+    if (primero.tagName === "INPUT") primero.focus({ preventScroll: true });
+    return;
+  }
+
   const name = document.getElementById("custName").value.trim();
   const address = document.getElementById("custAddress").value.trim();
+  const cashWith = document.getElementById("cashWith").value.trim();
   const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
   const descuento = discountAmount(subtotal);
   const total = subtotal - descuento;
@@ -611,9 +689,14 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
     msg += `\n🎟️ Descuento *${appliedCode}* (${DISCOUNTS[appliedCode].percent}%): -${money(descuento)}`;
   }
   msg += `\n💰 *Total: ${money(total)}*`;
-  msg += `\n_(sin incluir domicilio)_\n`;
-  if (name) msg += `\n👤 Nombre: ${name}`;
-  if (address) msg += `\n📍 Dirección: ${address}`;
+  msg += orderMode === "Delivery" ? `\n_(sin incluir domicilio)_\n` : `\n`;
+
+  const icono = { "Delivery": "🛵", "Retiro en local": "🏃", "Comer en el local": "🍽️" }[orderMode];
+  msg += `\n👤 Nombre: ${name}`;
+  msg += `\n${icono} Tipo: ${orderMode}`;
+  if (orderMode === "Delivery") msg += `\n📍 Dirección: ${address}`;
+  msg += `\n💳 Pago: ${payMethod}`;
+  if (payMethod === "Efectivo" && cashWith) msg += ` (paga con ${cashWith})`;
   msg += `\n\n¡Gracias! Quedo atento(a) para confirmar mi pedido. 🐶`;
 
   window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");

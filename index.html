@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body>
@@ -381,9 +381,40 @@
       <p>Tu carrito está vacío.<br>¡Despierta a La Lupita con un pedido!</p>
     </div>
     <div class="cart-footer" id="cartFooter" hidden>
-      <div class="cart-fields">
-        <input type="text" id="custName" placeholder="Tu nombre">
-        <input type="text" id="custAddress" placeholder="Dirección de entrega (Cayambe)">
+      <div class="cart-form">
+        <div class="field-block">
+          <span class="field-label">¿Cómo lo quieres? <em>*</em></span>
+          <div class="choice-row" id="modeOptions">
+            <button type="button" class="choice" data-mode="Delivery">🛵<span>Delivery</span></button>
+            <button type="button" class="choice" data-mode="Retiro en local">🏃<span>Retiro</span></button>
+            <button type="button" class="choice" data-mode="Comer en el local">🍽️<span>Comer aquí</span></button>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label class="field-label" for="custName">Tu nombre <em>*</em></label>
+          <input type="text" id="custName" placeholder="¿Cómo te llamas?" autocomplete="name">
+        </div>
+
+        <div class="field-block" id="addressBlock" hidden>
+          <label class="field-label" for="custAddress">Dirección de entrega <em>*</em></label>
+          <input type="text" id="custAddress" placeholder="Calle, número y referencia (Cayambe)">
+        </div>
+
+        <div class="field-block">
+          <span class="field-label">Forma de pago <em>*</em></span>
+          <div class="choice-row" id="payOptions">
+            <button type="button" class="choice" data-pay="Efectivo">💵<span>Efectivo</span></button>
+            <button type="button" class="choice" data-pay="Transferencia">🏦<span>Transferencia</span></button>
+            <button type="button" class="choice" data-pay="DeUna">📱<span>DeUna</span></button>
+            <button type="button" class="choice" data-pay="Tarjeta">💳<span>Tarjeta</span></button>
+          </div>
+        </div>
+
+        <div class="field-block" id="cashBlock" hidden>
+          <label class="field-label" for="cashWith">¿Con cuánto pagas? <small>(para llevar tu cambio)</small></label>
+          <input type="text" id="cashWith" placeholder="Ej: $20" inputmode="decimal">
+        </div>
       </div>
       <div class="promo-code">
         <label for="promoInput">🎟️ ¿Tienes un código de descuento?</label>
@@ -409,6 +440,7 @@
         </div>
       </div>
       <p class="cart-note">El costo del domicilio se coordina por WhatsApp.</p>
+      <p class="form-error" id="formError" hidden></p>
       <button class="btn btn-wa" id="checkoutBtn">Enviar pedido por WhatsApp 🚀</button>
     </div>
   </aside>
@@ -422,6 +454,6 @@
   </div>
 </div>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
