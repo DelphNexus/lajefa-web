@@ -136,6 +136,10 @@ const MENU = {
 
 const money = (n) => `$${n.toFixed(2)}`;
 
+/* Texto escrito por el cliente nunca se inyecta crudo en el HTML */
+const esc = (s) => String(s).replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
 /* ===== RENDER MENÚ ===== */
 function cardHTML(item, type, i) {
   const comboClass = type === "combos" ? " card-combo" : "";
@@ -210,8 +214,39 @@ function toast(msg) {
 }
 
 /* ===== ESTADO ===== */
+
+/* El carrito vive en el navegador del cliente, así que NUNCA confiamos en el
+   precio guardado: se recalcula desde el menú antes de mostrarlo o enviarlo.
+   Si alguien edita el almacenamiento para pagar $0.01, el precio real vuelve. */
+function priceOf(line) {
+  const item = (MENU[line.type] || []).find(i => i.id === line.id);
+  if (!item) return null;                       // producto que ya no existe
+
+  let p = item.price;
+  if (line.combo && item.combo) p += COMBO_PRICE;
+
+  const catalogo = line.type === "burgers" ? INGREDIENTS : PAPA_TOPPINGS;
+  for (const ex of line.extras || []) {
+    const ing = catalogo.find(i => i.id === ex.id);
+    if (ing) p += ing.price * Math.min(Math.max(+ex.qty || 0, 0), 5);
+  }
+  return Math.round(p * 100) / 100;
+}
+
+function sanitizeCart(lista) {
+  if (!Array.isArray(lista)) return [];
+  return lista.reduce((ok, line) => {
+    const real = priceOf(line);
+    if (real === null) return ok;               // descarta lo que ya no está
+    line.qty = Math.min(Math.max(Math.round(+line.qty) || 1, 1), 20);
+    line.unit = real;                           // precio real manda
+    ok.push(line);
+    return ok;
+  }, []);
+}
+
 let cart = [];
-try { cart = JSON.parse(localStorage.getItem("lajefa-cart") || "[]"); } catch { cart = []; }
+try { cart = sanitizeCart(JSON.parse(localStorage.getItem("lajefa-cart") || "[]")); } catch { cart = []; }
 
 function saveCart() { localStorage.setItem("lajefa-cart", JSON.stringify(cart)); }
 
@@ -406,7 +441,7 @@ document.getElementById("qtyMinus").addEventListener("click", () => {
 });
 
 document.getElementById("qtyPlus").addEventListener("click", () => {
-  current.qty++;
+  if (current.qty < 20) current.qty++;
   document.getElementById("qtyValue").textContent = current.qty;
   updateModalTotal();
 });
@@ -433,11 +468,29 @@ function customLines() {
 }
 
 document.getElementById("addToCart").addEventListener("click", () => {
+  const extras = [];
+  if (current.isBurger) {
+    for (const ing of INGREDIENTS) {
+      const def = current.defaults[ing.id] ?? 0;
+      const q = current.ing[ing.id] ?? 0;
+      if (q > def) extras.push({ id: ing.id, qty: q - def });
+    }
+  }
+  if (current.isPapa) {
+    for (const t of PAPA_TOPPINGS) {
+      const q = current.papaTops[t.id] ?? 0;
+      if (q > 0) extras.push({ id: t.id, qty: q });
+    }
+  }
+
   cart.push({
+    type: current.type,
+    id: current.item.id,
     name: current.item.name,
     bread: current.item.bread ? current.bread : null,
     combo: current.combo,
     comboDrink: current.combo ? current.comboDrink : null,
+    extras,
     lines: customLines(),
     note: document.getElementById("itemNote").value.trim(),
     qty: current.qty,
@@ -530,6 +583,7 @@ cartOverlay.addEventListener("click", (e) => { if (e.target === cartOverlay) clo
 
 function renderCart() {
   const itemsEl = document.getElementById("cartItems");
+  cart = sanitizeCart(cart);
   const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const descuento = discountAmount(subtotal);
@@ -550,14 +604,14 @@ function renderCart() {
 
   itemsEl.innerHTML = cart.map((item, idx) => {
     const details = [];
-    if (item.bread) details.push(item.bread);
-    if (item.combo) details.push(`Combo + ${item.comboDrink}`);
-    details.push(...(item.lines || []));
-    if (item.note) details.push(`Nota: ${item.note}`);
+    if (item.bread) details.push(esc(item.bread));
+    if (item.combo) details.push(`Combo + ${esc(item.comboDrink)}`);
+    details.push(...(item.lines || []).map(esc));
+    if (item.note) details.push(`Nota: ${esc(item.note)}`);
     return `
     <div class="cart-item">
       <div class="cart-item-top">
-        <span class="cart-item-name">${item.name}</span>
+        <span class="cart-item-name">${esc(item.name)}</span>
         <span class="cart-item-price">${money(item.unit * item.qty)}</span>
       </div>
       ${details.length ? `<div class="cart-item-detail">${details.join(" · ")}</div>` : ""}
@@ -581,7 +635,7 @@ document.getElementById("cartItems").addEventListener("click", (e) => {
     const i = +minus.dataset.minus;
     cart[i].qty > 1 ? cart[i].qty-- : cart.splice(i, 1);
   }
-  if (plus) cart[+plus.dataset.plus].qty++;
+  if (plus) { const i = cart[+plus.dataset.plus]; if (i.qty < 20) i.qty++; }
   if (remove) cart.splice(+remove.dataset.remove, 1);
   if (minus || plus || remove) { saveCart(); renderCart(); }
 });
@@ -654,6 +708,8 @@ function validateOrder() {
 
 /* ===== CHECKOUT WHATSAPP ===== */
 document.getElementById("checkoutBtn").addEventListener("click", () => {
+  cart = sanitizeCart(cart);
+  saveCart();
   if (!cart.length) return;
 
   clearFieldErrors();
