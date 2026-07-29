@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=6">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body>
@@ -205,9 +205,15 @@
     <img src="images/brand/mascota.png" alt="" class="quiz-mascot">
     <div class="quiz-text">
       <h2>¿No sabes cuál pedir?</h2>
-      <p>Responde 4 preguntas y descubre qué burger va contigo.</p>
+      <p>Haz el test rápido o pregúntale directo a La Jefa por WhatsApp.</p>
     </div>
-    <button id="quizBtn" class="btn btn-coral btn-big">🎯 ¿Qué burger eres?</button>
+    <div class="quiz-actions">
+      <button id="quizBtn" class="btn btn-coral btn-big">🎯 ¿Qué burger eres?</button>
+      <a class="btn btn-ask btn-big" target="_blank" rel="noopener"
+         href="https://wa.me/593998939215?text=%C2%A1Hola%20La%20Jefa!%20%F0%9F%90%B6%20%C2%BFQu%C3%A9%20me%20recomiendas%20hoy%3F">
+        💬 Pregúntale a La Jefa
+      </a>
+    </div>
   </section>
 
   <!-- Cómo funciona -->
@@ -379,8 +385,17 @@
     <div class="cart-empty" id="cartEmpty">
       <img src="images/brand/sticker-cerrado.png" alt="" class="cart-empty-img">
       <p>Tu carrito está vacío.<br>¡Despierta a La Lupita con un pedido!</p>
+      <a class="btn btn-ask" target="_blank" rel="noopener"
+         href="https://wa.me/593998939215?text=%C2%A1Hola%20La%20Jefa!%20%F0%9F%90%B6%20%C2%BFQu%C3%A9%20me%20recomiendas%20hoy%3F">
+        💬 Pregúntale a La Jefa
+      </a>
     </div>
     <div class="cart-footer" id="cartFooter" hidden>
+      <div class="suggest" id="suggestBlock" hidden>
+        <p class="suggest-title">😋 ¿Le sumas algo?</p>
+        <div class="suggest-row" id="suggestRow"></div>
+      </div>
+
       <div class="cart-form">
         <div class="field-block">
           <span class="field-label">¿Cómo lo quieres? <em>*</em></span>
@@ -454,6 +469,6 @@
   </div>
 </div>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

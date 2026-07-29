@@ -601,6 +601,7 @@ function renderCart() {
     document.getElementById("discountLabel").textContent = `Descuento (${appliedCode} · ${DISCOUNTS[appliedCode].percent}%)`;
   }
   document.getElementById("cartTotal").textContent = money(total);
+  renderSuggestions();
 
   itemsEl.innerHTML = cart.map((item, idx) => {
     const details = [];
@@ -626,6 +627,45 @@ function renderCart() {
     </div>`;
   }).join("");
 }
+
+/* ===== SUGERENCIAS: "¿Le sumas algo?" =====
+   Mira qué falta en el carrito y ofrece el acompañante lógico.
+   Sin IA, sin costo: papas si no hay, bebida si no hay, salsa/postre extra. */
+function renderSuggestions() {
+  const bloque = document.getElementById("suggestBlock");
+  const fila = document.getElementById("suggestRow");
+  if (!cart.length) { bloque.hidden = true; return; }
+
+  const tiene = (t) => cart.some(i => i.type === t);
+  const tieneId = (id) => cart.some(i => i.id === id);
+  const hayBurger = tiene("burgers") || tiene("combos");
+
+  /* El combo ya incluye papas + bebida: no las volvemos a ofrecer */
+  const hayCombo = cart.some(i => i.combo);
+
+  const ideas = [];
+  if (hayBurger && !tiene("sides") && !hayCombo) ideas.push(["sides", "papas"]);
+  if (!tiene("drinks") && !hayCombo) ideas.push(["drinks", "pepsi"]);
+  if (hayBurger && !tieneId("aros")) ideas.push(["sides", "aros"]);
+  if (!hayBurger && tiene("sides")) ideas.push(["burgers", "lupita"]);
+
+  const lista = ideas.slice(0, 3).map(([t, id]) => ({ t, p: MENU[t].find(x => x.id === id) })).filter(x => x.p);
+  if (!lista.length) { bloque.hidden = true; return; }
+
+  fila.innerHTML = lista.map(({ t, p }) => `
+    <button type="button" class="suggest-card" data-add-type="${t}" data-add-id="${p.id}">
+      <img src="${p.img}" alt="" onerror="this.replaceWith('${p.emoji}')">
+      <span class="suggest-name">${esc(p.name)}</span>
+      <span class="suggest-price">+${money(p.price)}</span>
+    </button>`).join("");
+  bloque.hidden = false;
+}
+
+document.getElementById("suggestRow").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-add-id]");
+  if (!btn) return;
+  openModal(btn.dataset.addType, btn.dataset.addId);
+});
 
 document.getElementById("cartItems").addEventListener("click", (e) => {
   const minus = e.target.closest("[data-minus]");
