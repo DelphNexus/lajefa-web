@@ -47,7 +47,14 @@
 
 [hidden] { display: none !important; }
 
-html { scroll-behavior: smooth; }
+/* `clip` (no `hidden`): tapa lo que sobra a los lados SIN volver la página una
+   caja deslizante. Con `hidden` el celular se movía de lado y las barras
+   pegajosas dejaban de quedarse fijas. */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
 
 body {
   font-family: var(--font-body);
@@ -55,7 +62,9 @@ body {
   background: var(--cream);
   color: var(--ink);
   line-height: 1.55;
+  width: 100%;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 img { max-width: 100%; }
