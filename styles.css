@@ -1703,17 +1703,33 @@ input.field-error { box-shadow: 0 0 0 4px rgba(224,82,82,.15); }
 }
 
 .review-card {
+  position: relative;
   background: var(--white);
   border: 2px solid var(--coral-soft);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 22px 24px;
   text-align: left;
+  transition: .25s;
+}
+
+.review-card:hover { transform: translateY(-5px); border-color: var(--coral); }
+
+.review-card::before {
+  content: "\201C";
+  position: absolute;
+  top: 4px;
+  right: 18px;
+  font-family: var(--font-head);
+  font-size: 3.6rem;
+  line-height: 1;
+  color: var(--coral-soft);
+  pointer-events: none;
 }
 
 .review-stars { color: #f5b944; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 8px; }
 
-.review-text { font-size: .92rem; color: #4a3a63; margin-bottom: 10px; }
+.review-text { position: relative; font-size: .92rem; color: #4a3a63; margin-bottom: 10px; }
 
 .review-name { font-weight: 700; color: var(--purple); font-size: .85rem; }
 

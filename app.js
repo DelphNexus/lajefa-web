@@ -869,17 +869,38 @@ setInterval(updatePromo, 60000);
 
 document.getElementById("promoBtn").addEventListener("click", () => openModal("combos", PROMO.itemId));
 
-/* ===== RESEÑAS ===== */
-/* Pega aquí reseñas REALES de Google Maps: { name, stars (1-5), text } */
-const REVIEWS = [];
+/* ===== RESEÑAS =====
+   Reseñas REALES de Google Maps. Para agregar otra, copia una línea. */
+const REVIEWS = [
+  {
+    name: "Dialex Herrera", stars: 5,
+    text: "Excelentes hamburguesas, súper frescas y jugosas. Se nota que tienen ingredientes de calidad y el sabor exquisito. Súper recomendados.",
+  },
+  {
+    name: "Sandra Villalba", stars: 5,
+    text: "Excelentes hamburguesas y papas crujientes. Se puede comer en el lugar.",
+  },
+  {
+    name: "Daniel Gaona", stars: 5,
+    text: "Deliciosas. 100% recomendadas.",
+  },
+  {
+    name: "Marco Valenzuela", stars: 5,
+    text: "Todo excelente 💯",
+  },
+  {
+    name: "Matías", stars: 5,
+    text: "Comida 5 · Servicio 5 · Ambiente 5",
+  },
+];
 
 const reviewsGrid = document.getElementById("reviewsGrid");
 if (REVIEWS.length) {
   reviewsGrid.innerHTML = REVIEWS.map(r => `
     <div class="review-card">
       <div class="review-stars">${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)}</div>
-      <p class="review-text">"${r.text}"</p>
-      <p class="review-name">— ${r.name}</p>
+      <p class="review-text">${esc(r.text)}</p>
+      <p class="review-name">— ${esc(r.name)}</p>
     </div>`).join("");
 } else {
   reviewsGrid.hidden = true;
