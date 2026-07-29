@@ -73,7 +73,7 @@ const MENU = {
     },
     {
       id: "consentida", name: "La Consentida", price: 5.00, emoji: "🤩",
-      img: "images/la-consentida.jpg", badge: "La favorita",
+      img: "images/la-consentida.jpg", badge: "⭐ La más pedida", hot: true,
       desc: "Doble carne smash, doble queso cheddar, tocino crujiente, aros de cebolla, salsa BBQ de la casa y salsa secreta de Lupita.",
       bread: true, combo: true, toppings: true,
     },
@@ -795,7 +795,23 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   if (payMethod === "Efectivo" && cashWith) msg += ` (paga con ${cashWith})`;
   msg += `\n\n¡Gracias! Quedo atento(a) para confirmar mi pedido. 🐶`;
 
-  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  const waUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  const ventana = window.open(waUrl, "_blank");
+
+  if (!ventana) {
+    /* El navegador bloqueó la ventana nueva: mandamos a WhatsApp en la misma
+       pestaña para no perder el pedido. */
+    window.location.href = waUrl;
+    return;
+  }
+
+  /* Pedido enviado: vaciamos carrito y mostramos la página de gracias.
+     Esa visita a /gracias es la que el contador usa para saber cuántos
+     pedidos salieron de verdad (no solo cuántos miraron). */
+  cart = [];
+  saveCart();
+  try { sessionStorage.setItem("lajefa-wa", waUrl); } catch (e) {}
+  window.location.href = "gracias.html";
 });
 
 renderCart();

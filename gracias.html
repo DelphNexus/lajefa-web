@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Pedido enviado! — La Jefa Darkitchen</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
+</head>
+<body class="thanks-body">
+
+<div class="thanks-wrap">
+  <img src="images/brand/sticker-preparando.png" alt="Estamos preparando tu burger" class="thanks-sticker">
+  <h1>¡Pedido enviado!</h1>
+  <p class="thanks-lead">Ya te abrimos WhatsApp con tu pedido escrito.<br>
+    <strong>Solo dale enviar</strong> y te confirmamos enseguida. 🐶</p>
+
+  <div class="thanks-note" id="thanksNote" hidden>
+    <p>¿No se abrió WhatsApp?</p>
+    <a class="btn btn-wa" id="reopenBtn" target="_blank" rel="noopener">Abrir WhatsApp otra vez</a>
+  </div>
+
+  <div class="thanks-actions">
+    <a class="btn btn-coral btn-big" href="index.html">🍔 Volver al menú</a>
+    <a class="btn btn-ghost-purple" href="https://maps.app.goo.gl/jqbpjwTSJtWHzYoa9" target="_blank" rel="noopener">⭐ Dejarnos una reseña</a>
+  </div>
+
+  <div class="thanks-social">
+    <a href="https://instagram.com/lajefa_ec" target="_blank" rel="noopener">Instagram</a>
+    <span>·</span>
+    <a href="https://www.facebook.com/profile.php?id=61591512101104" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</div>
+
+<script>
+  /* Si el navegador bloqueó la ventana de WhatsApp, ofrecemos abrirla a mano. */
+  try {
+    var pendiente = sessionStorage.getItem("lajefa-wa");
+    if (pendiente) {
+      var btn = document.getElementById("reopenBtn");
+      btn.href = pendiente;
+      document.getElementById("thanksNote").hidden = false;
+      sessionStorage.removeItem("lajefa-wa");
+    }
+  } catch (e) {}
+</script>
+</body>
+</html>
