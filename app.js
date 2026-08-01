@@ -938,40 +938,47 @@ function updateStatus() {
 updateStatus();
 setInterval(updateStatus, 60000);
 
-/* ===== PROMO DE LA SEMANA ===== */
-/* Edita aquí la promo destacada. day: día en que aplica (1 = lunes). */
+/* ===== PROMO DESTACADA =====
+   Edita aquí la promo del banner. Cuando pase "hasta", el banner se esconde
+   solo y no hay que tocar nada. */
 const PROMO = {
   active: true,
-  itemId: "lunes",
-  title: "Combo Lunes de La Jefa",
-  desc: "1 La Lupita + 1 La Reina + 1 La Papiza + 1 Gaseosa de 1L por solo $9.99. Solo los lunes.",
-  day: 1,
+  eyebrow: "⚡ La Jefa Cyber Week",
+  title: "10% OFF en toda la web",
+  desc: "Del 3 al 8 de agosto usa el código LAJEFA10 en tus pedidos por la web. 🎁 Los primeros 20 pedidos del lunes llevan papas gratis.",
+  desde: new Date("2026-08-03T15:30:00-05:00").getTime(),
+  hasta: new Date("2026-08-08T22:00:00-05:00").getTime(),
 };
 
+function textoPlazo(ms) {
+  const s = Math.max(Math.floor(ms / 1000), 0);
+  const d = Math.floor(s / 86400), h = Math.floor(s / 3600) % 24, m = Math.floor(s / 60) % 60;
+  return d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`;
+}
+
 function updatePromo() {
-  if (!PROMO.active) return;
   const sec = document.getElementById("promoSection");
+  const ahora = Date.now();
+
+  if (!PROMO.active || ahora >= PROMO.hasta) { sec.hidden = true; return; }
+
   sec.hidden = false;
+  document.querySelector(".promo-eyebrow").textContent = PROMO.eyebrow;
   document.getElementById("promoTitle").textContent = PROMO.title;
   document.getElementById("promoDesc").textContent = PROMO.desc;
 
-  const { day, mins } = ecuadorNow();
   const el = document.getElementById("promoCount");
-  if (day === PROMO.day && mins < 1320) {
-    const left = 1320 - mins;
-    el.innerHTML = `<strong>¡Es HOY!</strong> Termina en ${Math.floor(left / 60)}h ${left % 60}m`;
-  } else {
-    let days = (PROMO.day - day + 7) % 7;
-    if (days === 0) days = 7;
-    const hoursLeft = (days * 1440 - mins + 930) / 60;
-    el.innerHTML = `Vuelve en <strong>${Math.floor(hoursLeft / 24)}d ${Math.round(hoursLeft % 24)}h</strong>`;
-  }
+  el.innerHTML = ahora < PROMO.desde
+    ? `Empieza en <strong>${textoPlazo(PROMO.desde - ahora)}</strong>`
+    : `<strong>¡Activa ya!</strong> Termina en ${textoPlazo(PROMO.hasta - ahora)}`;
 }
 
 updatePromo();
 setInterval(updatePromo, 60000);
 
-document.getElementById("promoBtn").addEventListener("click", () => openModal("combos", PROMO.itemId));
+document.getElementById("promoBtn").addEventListener("click", () => {
+  document.getElementById("hamburguesas").scrollIntoView({ behavior: "smooth" });
+});
 
 /* ===== RESEÑAS =====
    Reseñas REALES de Google Maps. Para agregar otra, copia una línea. */

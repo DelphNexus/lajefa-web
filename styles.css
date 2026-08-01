@@ -1891,6 +1891,20 @@ input.field-error { box-shadow: 0 0 0 4px rgba(224,82,82,.15); }
 
 .gate-deal strong { color: var(--coral-light); letter-spacing: 1px; }
 
+.gate-prize {
+  background: rgba(242,145,124,.16);
+  border: 2px solid var(--coral);
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  font-size: .92rem;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: 0 0 26px rgba(242,145,124,.28);
+}
+
+.gate-prize strong { color: var(--coral-light); }
+
 .gate-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 
 .gate-note { font-size: .82rem; opacity: .75; }
