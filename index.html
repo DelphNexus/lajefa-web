@@ -18,10 +18,57 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=9">
+<link rel="stylesheet" href="styles.css?v=10">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body>
+
+<!-- ===== ANTESALA (se borra sola el lunes 3:30 PM) ===== -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-bg" aria-hidden="true">
+    <span class="gate-floor"></span>
+    <span class="gate-glow gg1"></span>
+    <span class="gate-glow gg2"></span>
+  </div>
+  <div class="gate-inner">
+    <img src="images/brand/logo-blanco.png" alt="La Jefa Darkitchen" class="gate-logo">
+    <p class="gate-kicker">Muy pronto</p>
+    <h1 class="gate-title">Nuestra web<br><em>abre en</em></h1>
+
+    <div class="gate-clock" id="gateClock">
+      <div><strong id="gDias">00</strong><span>días</span></div>
+      <div><strong id="gHoras">00</strong><span>horas</span></div>
+      <div><strong id="gMin">00</strong><span>min</span></div>
+      <div><strong id="gSeg">00</strong><span>seg</span></div>
+    </div>
+
+    <p class="gate-when">🗓️ Lunes 3 de agosto · 3:30 PM</p>
+
+    <div class="gate-deal">
+      <span class="gate-off">10%</span>
+      <span>Ese día se activa el código<br><strong>LAJEFA10</strong> — solo por la web</span>
+    </div>
+
+    <div class="gate-actions">
+      <button class="btn btn-coral btn-big" id="peekBtn">👀 Espía el menú</button>
+      <a class="btn btn-wa btn-big" target="_blank" rel="noopener"
+         href="https://wa.me/593998939215?text=%C2%A1Hola%20La%20Jefa!%20%F0%9F%90%B6%20Quiero%20hacer%20un%20pedido">
+        💬 Pide hoy por WhatsApp
+      </a>
+    </div>
+
+    <p class="gate-note">Hoy seguimos cocinando normal 🍔 Lunes a sábado · 3:30 PM – 10:00 PM</p>
+  </div>
+</div>
+
+<!-- Barra fija mientras se espía el menú -->
+<div class="peekbar" id="peekbar" hidden>
+  <span class="peekbar-txt">⏳ Los pedidos por la web se activan en <strong id="peekCount">…</strong></span>
+  <a class="peekbar-wa" target="_blank" rel="noopener"
+     href="https://wa.me/593998939215?text=%C2%A1Hola%20La%20Jefa!%20%F0%9F%90%B6%20Quiero%20hacer%20un%20pedido">
+    💬 Pide por WhatsApp
+  </a>
+</div>
 
 <!-- ===== HEADER ===== -->
 <header class="header" id="header">
@@ -375,6 +422,7 @@
           <button id="qtyPlus" aria-label="Más">+</button>
         </div>
         <button class="btn btn-coral" id="addToCart">Agregar · <span id="modalTotal">$0.00</span></button>
+        <a class="btn btn-wa" id="preOrderBtn" target="_blank" rel="noopener" hidden>💬 Pídelo por WhatsApp</a>
       </div>
     </div>
   </div>
@@ -476,7 +524,7 @@
   </div>
 </div>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 
 <!-- Cloudflare Web Analytics (contador de visitas, sin cookies) -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js"

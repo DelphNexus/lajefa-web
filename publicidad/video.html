@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Video Cyber Week</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1080px; height:1080px; overflow:hidden; background:#1b0836; }
+
+  .post {
+    position:relative; width:1080px; height:1080px;
+    background:
+      radial-gradient(620px 460px at 50% 44%, rgba(242,145,124,.20), transparent 64%),
+      radial-gradient(760px 520px at 50% -10%, rgba(138,79,208,.42), transparent 62%),
+      linear-gradient(168deg,#1b0836 0%,#2b1152 46%,#3d1a68 100%);
+    font-family:'Baloo 2',sans-serif; color:#fff; overflow:hidden;
+  }
+
+  .floor { position:absolute; left:-30%; right:-30%; bottom:0; height:430px;
+    background:
+      repeating-linear-gradient(90deg, rgba(242,145,124,.42) 0 2px, transparent 2px 92px),
+      repeating-linear-gradient(0deg, rgba(242,145,124,.30) 0 2px, transparent 2px 62px);
+    transform:perspective(420px) rotateX(66deg); transform-origin:bottom center;
+    mask-image:linear-gradient(to top,#000 8%,transparent 82%);
+    -webkit-mask-image:linear-gradient(to top,#000 8%,transparent 82%); }
+
+  .scan { position:absolute; inset:0; pointer-events:none; opacity:.10;
+    background:repeating-linear-gradient(0deg,#fff 0 1px, transparent 1px 5px); }
+
+  .checker { position:absolute; left:0; right:0; height:28px;
+    background:repeating-conic-gradient(#f2917c 0% 25%, transparent 0% 50%) 0 0/28px 28px; }
+  .checker.top { top:0; } .checker.bot { bottom:0; }
+
+  .glow { position:absolute; border-radius:50%; filter:blur(100px); }
+  .g1 { width:520px; height:520px; background:#8a4fd0; opacity:.55; top:-180px; left:-160px; }
+  .g2 { width:420px; height:420px; background:#f2917c; opacity:.30; bottom:-140px; right:-130px; }
+
+  .bracket { position:absolute; width:74px; height:74px; border:4px solid rgba(242,145,124,.72); }
+  .b1{top:60px;left:44px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
+  .b2{top:60px;right:44px;border-left:0;border-bottom:0;border-radius:0 14px 0 0}
+  .b3{bottom:60px;left:44px;border-right:0;border-top:0;border-radius:0 0 0 14px}
+  .b4{bottom:60px;right:44px;border-left:0;border-top:0;border-radius:0 0 14px 0}
+
+  .spark { position:absolute; color:#f7b3a4; }
+  .s1{top:250px;left:96px;font-size:26px}
+  .s2{top:206px;right:104px;font-size:34px}
+  .s3{bottom:352px;left:74px;font-size:22px}
+  .s4{bottom:400px;right:78px;font-size:26px}
+
+  .logo { position:absolute; top:74px; left:50%; width:132px; height:132px;
+    object-fit:contain; filter:drop-shadow(0 6px 20px rgba(0,0,0,.5)); }
+
+  .neon { position:absolute; top:196px; left:0; right:0; text-align:center;
+    font-family:'Lilita One',sans-serif; font-size:100px; line-height:.9;
+    letter-spacing:3px; color:#fff; }
+  .neon small { display:block; font-size:34px; letter-spacing:13px;
+    color:#f7b3a4; text-shadow:0 0 18px rgba(242,145,124,.8); margin-bottom:2px; }
+
+  .dates { position:absolute; top:338px; left:50%;
+    background:#f2917c; color:#1b0836; font-weight:800; font-size:24px;
+    letter-spacing:3px; padding:10px 32px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 0 30px rgba(242,145,124,.65); }
+
+  .slogan { position:absolute; top:394px; left:0; right:0; text-align:center;
+    font-family:'Lilita One',sans-serif; font-size:38px; line-height:1.06;
+    text-transform:uppercase; color:#fff; text-shadow:0 6px 20px rgba(0,0,0,.5); }
+  .slogan em { font-style:normal; color:#f2917c; }
+
+  .ring { position:absolute; left:50%; top:668px; border-radius:50%;
+    border:2px solid rgba(242,145,124,.35); }
+  .r1 { width:404px; height:404px; }
+  .r2 { width:458px; height:458px; border-color:rgba(242,145,124,.18); }
+
+  .burger { position:absolute; top:668px; left:50%;
+    width:348px; height:348px; object-fit:cover; border-radius:50%;
+    border:9px solid #f2917c;
+    box-shadow:0 0 46px rgba(242,145,124,.6), 0 26px 60px rgba(0,0,0,.6); }
+
+  .side { position:absolute; width:140px; height:140px; object-fit:cover;
+    border-radius:50%; border:6px solid #f2917c;
+    box-shadow:0 0 26px rgba(242,145,124,.45), 0 14px 30px rgba(0,0,0,.5); }
+  .side.l { left:62px; top:606px; }
+  .side.r { right:62px; top:606px; }
+
+  .deal { position:absolute; top:858px; left:50%;
+    display:flex; align-items:center; gap:20px;
+    background:rgba(11,4,26,.72); border:2px solid #f2917c; border-radius:20px;
+    padding:12px 28px; white-space:nowrap; box-shadow:0 0 34px rgba(242,145,124,.4); }
+  .deal .off { font-family:'Lilita One',sans-serif; font-size:48px; color:#f2917c;
+    line-height:1; text-shadow:0 0 22px rgba(242,145,124,.85); }
+  .deal .txt { font-size:19px; font-weight:700; line-height:1.25; }
+  .deal .code { display:inline-block; font-family:'Lilita One',sans-serif;
+    font-size:27px; letter-spacing:2px; color:#1b0836; background:#f7b3a4;
+    padding:2px 12px; border-radius:8px; }
+
+  .url { position:absolute; top:948px; left:50%;
+    background:#f2917c; color:#1b0836; font-family:'Lilita One',sans-serif;
+    font-size:34px; padding:11px 40px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 0 40px rgba(242,145,124,.6); }
+
+  .only { position:absolute; top:1018px; left:0; right:0; text-align:center;
+    font-size:16px; font-weight:800; letter-spacing:1.4px; color:#f7b3a4;
+    text-transform:uppercase; }
+</style>
+</head>
+<body>
+<div class="post">
+  <span class="glow g1" id="g1"></span><span class="glow g2" id="g2"></span>
+  <span class="floor" id="floor"></span>
+  <span class="checker top" id="ckTop"></span>
+
+  <span class="bracket b1"></span><span class="bracket b2"></span>
+  <span class="bracket b3"></span><span class="bracket b4"></span>
+
+  <span class="spark s1" id="sp1">✦</span><span class="spark s2" id="sp2">✦</span>
+  <span class="spark s3" id="sp3">✧</span><span class="spark s4" id="sp4">✦</span>
+
+  <img class="logo" id="logo" src="../images/brand/logo-blanco.png" alt="">
+  <div class="neon" id="neon"><small id="neonSmall">LA JEFA</small><span id="neonBig">CYBER WEEK</span></div>
+  <span class="dates" id="dates">3 AL 8 DE AGOSTO</span>
+  <div class="slogan" id="slogan">Tu burger, a tu gusto,<br><em>en 3 toques</em></div>
+
+  <span class="ring r2" id="ring2"></span><span class="ring r1" id="ring1"></span>
+  <img class="side l" id="sideL" src="../images/papas-clasicas.jpg" alt="">
+  <img class="side r" id="sideR" src="../images/pepsi.jpg" alt="">
+  <img class="burger" id="burger" src="../images/la-consentida.jpg" alt="">
+
+  <div class="deal" id="deal">
+    <span class="off">10%</span>
+    <span class="txt">de descuento con el código<br><span class="code">LAJEFA10</span></span>
+  </div>
+
+  <span class="url" id="url">lajefa.delphbrothers.com</span>
+  <span class="only" id="only">Promo válida solo en pedidos por la web</span>
+
+  <span class="scan"></span>
+  <span class="checker bot" id="ckBot"></span>
+</div>
+
+<script>
+/* ===== Animación por tiempo exacto =====
+   render(t) dibuja el cuadro del segundo t. El renderizador llama esta
+   función y fotografía. Así el video sale idéntico siempre. */
+const D = 15;                    // duración total en segundos
+const $ = (id) => document.getElementById(id);
+
+const clamp = (v,a,b)=>Math.min(Math.max(v,a),b);
+const ease  = (x)=>1-Math.pow(1-clamp(x,0,1),3);          // suave al final
+const back  = (x)=>{x=clamp(x,0,1);const c=1.7;return 1+ (c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
+/* aparece entre "ini" y "ini+dur" */
+const seg = (t,ini,dur)=>clamp((t-ini)/dur,0,1);
+
+function render(t){
+  /* fondo siempre vivo */
+  const pulso = (Math.sin(t*2.2)+1)/2;
+  $('g1').style.opacity = 0.42 + pulso*0.22;
+  $('g2').style.opacity = 0.20 + (1-pulso)*0.18;
+  $('floor').style.backgroundPosition = `${-(t*70)%92}px ${(t*44)%62}px, 0 ${(t*44)%62}px`;
+  $('ckTop').style.backgroundPosition = `${(t*46)%56}px 0`;
+  $('ckBot').style.backgroundPosition = `${-(t*46)%56}px 0`;
+
+  /* chispas titilando */
+  [['sp1',0],['sp2',.7],['sp3',1.4],['sp4',2.1]].forEach(([id,off])=>{
+    const p=(Math.sin((t+off)*3.1)+1)/2;
+    $(id).style.opacity = .25+p*.75;
+    $(id).style.transform = `scale(${.8+p*.4})`;
+  });
+
+  /* 0.0s logo baja */
+  const a = ease(seg(t,0,.9));
+  $('logo').style.opacity = a;
+  $('logo').style.transform = `translateX(-50%) translateY(${(1-a)*-70}px)`;
+
+  /* 0.5s CYBER WEEK entra y late en neón */
+  const b = ease(seg(t,.5,.9));
+  const late = (Math.sin(t*4.6)+1)/2;
+  $('neon').style.opacity = b;
+  $('neon').style.transform = `scale(${.86+b*.14})`;
+  $('neonBig').style.textShadow =
+    `0 0 ${6+late*8}px rgba(255,255,255,.95),
+     0 0 ${20+late*22}px rgba(242,145,124,.95),
+     0 0 ${48+late*40}px rgba(242,145,124,.75),
+     0 0 ${90+late*60}px rgba(138,79,208,.8)`;
+
+  /* 1.3s fechas */
+  const c = back(seg(t,1.3,.7));
+  $('dates').style.opacity = clamp(seg(t,1.3,.4),0,1);
+  $('dates').style.transform = `translateX(-50%) scale(${c})`;
+
+  /* 1.9s eslogan */
+  const d = ease(seg(t,1.9,.8));
+  $('slogan').style.opacity = d;
+  $('slogan').style.transform = `translateY(${(1-d)*26}px)`;
+
+  /* 2.6s hamburguesa entra girando + flota */
+  const e = ease(seg(t,2.6,1.1));
+  const flota = Math.sin(t*1.5)*9;
+  $('burger').style.opacity = e;
+  $('burger').style.transform =
+    `translate(-50%,-50%) translateY(${(1-e)*70+flota}px) scale(${.62+e*.38}) rotate(${(1-e)*-26}deg)`;
+
+  /* anillos girando */
+  $('ring1').style.opacity = e*.9;
+  $('ring1').style.transform = `translate(-50%,-50%) rotate(${t*22}deg) scale(${.9+e*.1})`;
+  $('ring2').style.opacity = e*.7;
+  $('ring2').style.transform = `translate(-50%,-50%) rotate(${-t*14}deg) scale(${.9+e*.1})`;
+
+  /* 3.3s papas y bebida llegan de los lados */
+  const f = ease(seg(t,3.3,.8));
+  $('sideL').style.opacity = f;
+  $('sideL').style.transform = `translateX(${(1-f)*-150}px) rotate(${-11+Math.sin(t*1.7)*3}deg)`;
+  const g = ease(seg(t,3.6,.8));
+  $('sideR').style.opacity = g;
+  $('sideR').style.transform = `translateX(${(1-g)*150}px) rotate(${11+Math.sin(t*1.7+1)*3}deg)`;
+
+  /* 5.0s caja de descuento con brinco */
+  const h = back(seg(t,5.0,.8));
+  $('deal').style.opacity = clamp(seg(t,5.0,.4),0,1);
+  $('deal').style.transform = `translateX(-50%) scale(${h})`;
+
+  /* 6.0s link, con destello cada tanto */
+  const i = back(seg(t,6.0,.8));
+  const brillo = (Math.sin(t*3.4)+1)/2;
+  $('url').style.opacity = clamp(seg(t,6.0,.4),0,1);
+  $('url').style.transform = `translateX(-50%) scale(${i})`;
+  $('url').style.boxShadow = `0 0 ${26+brillo*34}px rgba(242,145,124,${.5+brillo*.4})`;
+
+  /* 6.8s letra chica */
+  $('only').style.opacity = ease(seg(t,6.8,.7));
+}
+
+/* estado inicial: todo apagado */
+render(0);
+window.render = render;
+window.DURACION = D;
+</script>
+</body>
+</html>

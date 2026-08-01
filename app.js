@@ -3,6 +3,16 @@
 const WHATSAPP = "593998939215";
 const COMBO_PRICE = 1.75;
 
+/* ===== LANZAMIENTO =====
+   Hasta esta fecha la web está en "antesala": se ve el menú pero los pedidos
+   online no se activan todavía; mientras tanto se pide por WhatsApp.
+   Lunes 3 de agosto de 2026, 3:30 PM hora de Ecuador (UTC-5).
+   Para adelantar o posponer, cambia solo esta línea. */
+const LANZAMIENTO = new Date("2026-08-03T15:30:00-05:00").getTime();
+
+const faltaParaLanzar = () => LANZAMIENTO - Date.now();
+const enAntesala = () => faltaParaLanzar() > 0;
+
 const BREADS = ["Pan de papa", "Pan de vainiquilla", "Pan brioche albino", "Pan de pretzel"];
 
 const COMBO_DRINKS = ["Pepsi", "Seven Up", "Fuze Tea", "Agua sin gas"];
@@ -306,6 +316,15 @@ function openModal(type, id) {
   if (isBurger || isPapa) renderIngredients();
 
   updateModalTotal();
+
+  /* En antesala no se agrega al carrito: se pide por WhatsApp */
+  const enEspera = typeof enAntesala === "function" && enAntesala();
+  document.getElementById("addToCart").hidden = enEspera;
+  document.querySelector(".qty-control").hidden = enEspera;
+  const wa = document.getElementById("preOrderBtn");
+  wa.hidden = !enEspera;
+  if (enEspera) wa.href = waProducto(item);
+
   modal.hidden = false;
   document.body.style.overflow = "hidden";
 }
@@ -577,7 +596,10 @@ function closeCart() {
   document.body.style.overflow = "";
 }
 
-document.getElementById("cartBtn").addEventListener("click", openCart);
+document.getElementById("cartBtn").addEventListener("click", () => {
+  if (enAntesala()) { toast(`🔒 Los pedidos por la web abren en ${textoCorto()}`); return; }
+  openCart();
+});
 document.getElementById("cartClose").addEventListener("click", closeCart);
 cartOverlay.addEventListener("click", (e) => { if (e.target === cartOverlay) closeCart(); });
 
@@ -815,6 +837,72 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
 });
 
 renderCart();
+
+/* ===== ANTESALA DE LANZAMIENTO =====
+   Portón con cuenta regresiva. Se puede espiar el menú, pero el carrito no
+   se activa hasta la hora. Al llegar la hora todo se abre solo, sin que
+   nadie toque nada. */
+const gate = document.getElementById("gate");
+const peekbar = document.getElementById("peekbar");
+const preOrderBtn = document.getElementById("preOrderBtn");
+
+const dos = (n) => String(n).padStart(2, "0");
+
+function partesRestantes() {
+  const ms = Math.max(faltaParaLanzar(), 0);
+  const s = Math.floor(ms / 1000);
+  return { d: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 };
+}
+
+function textoCorto() {
+  const { d, h, m, s } = partesRestantes();
+  if (d > 0) return `${d}d ${dos(h)}h ${dos(m)}m`;
+  if (h > 0) return `${dos(h)}h ${dos(m)}m ${dos(s)}s`;
+  return `${dos(m)}m ${dos(s)}s`;
+}
+
+/* Enlace de WhatsApp con el producto que está mirando */
+function waProducto(item) {
+  const txt = `¡Hola La Jefa! 🐶 Quiero pedir *${item.name}* (${money(item.price)})`;
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(txt)}`;
+}
+
+function abrirLaWeb() {
+  document.body.classList.remove("antesala");
+  gate.hidden = true;
+  peekbar.hidden = true;
+  document.body.style.overflow = "";
+}
+
+function tickAntesala() {
+  if (!enAntesala()) {                      // ¡llegó la hora!
+    abrirLaWeb();
+    clearInterval(relojAntesala);
+    return;
+  }
+  const { d, h, m, s } = partesRestantes();
+  document.getElementById("gDias").textContent = dos(d);
+  document.getElementById("gHoras").textContent = dos(h);
+  document.getElementById("gMin").textContent = dos(m);
+  document.getElementById("gSeg").textContent = dos(s);
+  document.getElementById("peekCount").textContent = textoCorto();
+}
+
+let relojAntesala;
+
+if (enAntesala()) {
+  document.body.classList.add("antesala");
+  gate.hidden = false;
+  document.body.style.overflow = "hidden";
+  tickAntesala();
+  relojAntesala = setInterval(tickAntesala, 1000);
+
+  document.getElementById("peekBtn").addEventListener("click", () => {
+    gate.hidden = true;                     // deja mirar el menú
+    peekbar.hidden = false;
+    document.body.style.overflow = "";
+  });
+}
 
 /* ===== ABIERTO / CERRADO (hora Ecuador) ===== */
 /* Horario: Lun-Sáb 15:30-22:00 · Domingo cerrado. Minutos desde medianoche. */
