@@ -10,6 +10,60 @@ const COMBO_PRICE = 1.75;
    Para adelantar o posponer, cambia solo esta línea. */
 const LANZAMIENTO = new Date("2026-08-03T15:30:00-05:00").getTime();
 
+/* ===== META PIXEL =====
+   Mide qué anuncios traen pedidos de verdad. Solo se carga si el visitante
+   no rechazó las cookies.
+
+   ⚠️ FALTA EL NÚMERO DEL PÍXEL. Se saca en Administrador de eventos →
+   "Conjuntos de datos" (NO es el ID de la cuenta publicitaria, que es
+   2127699133959274). Mientras esté vacío, el píxel no se carga y el aviso
+   de cookies no aparece: la web funciona igual. */
+const PIXEL_ID = "";
+
+function cargarPixel() {
+  if (!PIXEL_ID || window.fbq) return;
+  /* fragmento oficial de Meta */
+  !function (f, b, e, v, n, t, s) {
+    if (f.fbq) return; n = f.fbq = function () {
+      n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+    };
+    if (!f._fbq) f._fbq = n;
+    n.push = n; n.loaded = !0; n.version = "2.0"; n.queue = [];
+    t = b.createElement(e); t.async = !0; t.src = v;
+    s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+  }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+
+  fbq("init", PIXEL_ID);
+  fbq("track", "PageView");
+}
+
+/* Avisar un evento al píxel (si está cargado) */
+function pixel(evento, datos) {
+  if (typeof fbq === "function") fbq("track", evento, datos);
+}
+
+/* ===== AVISO DE COOKIES ===== */
+const COOKIE_KEY = "lajefa-cookies";
+
+function decidirCookies() {
+  const barra = document.getElementById("cookiebar");
+  const decision = localStorage.getItem(COOKIE_KEY);
+
+  if (!PIXEL_ID) return;                      // sin píxel no hay nada que avisar
+  if (decision !== "no") cargarPixel();       // por defecto sí, salvo rechazo
+  if (decision) return;                       // ya decidió antes: sin barra
+
+  barra.hidden = false;
+  const cerrar = (valor) => {
+    localStorage.setItem(COOKIE_KEY, valor);
+    barra.hidden = true;
+  };
+  document.getElementById("cookieOk").addEventListener("click", () => { cargarPixel(); cerrar("si"); });
+  document.getElementById("cookieNo").addEventListener("click", () => cerrar("no"));
+}
+
+decidirCookies();
+
 const faltaParaLanzar = () => LANZAMIENTO - Date.now();
 const enAntesala = () => faltaParaLanzar() > 0;
 
@@ -327,6 +381,11 @@ function openModal(type, id) {
 
   modal.hidden = false;
   document.body.style.overflow = "hidden";
+
+  pixel("ViewContent", {
+    content_name: item.name, content_ids: [item.id], content_type: "product",
+    value: item.price, currency: "USD",
+  });
 }
 
 /* Fila con stepper − / cantidad / + y estado (Sin · Incluido · Extra) */
@@ -516,6 +575,10 @@ document.getElementById("addToCart").addEventListener("click", () => {
     unit: unitPrice(),
   });
   saveCart();
+  pixel("AddToCart", {
+    content_name: current.item.name, content_ids: [current.item.id],
+    content_type: "product", value: unitPrice() * current.qty, currency: "USD",
+  });
   closeModal();
   renderCart();
   toast(`✅ ${current.item.name} agregado al pedido`);
@@ -830,9 +893,18 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   /* Pedido enviado: vaciamos carrito y mostramos la página de gracias.
      Esa visita a /gracias es la que el contador usa para saber cuántos
      pedidos salieron de verdad (no solo cuántos miraron). */
+  /* Guardo el monto para avisarle a Meta en la página de gracias */
+  try {
+    sessionStorage.setItem("lajefa-wa", waUrl);
+    sessionStorage.setItem("lajefa-venta", JSON.stringify({
+      total: Math.round(total * 100) / 100,
+      ids: cart.map(i => i.id),
+      piezas: cart.reduce((s, i) => s + i.qty, 0),
+    }));
+  } catch (e) {}
+
   cart = [];
   saveCart();
-  try { sessionStorage.setItem("lajefa-wa", waUrl); } catch (e) {}
   window.location.href = "gracias.html";
 });
 

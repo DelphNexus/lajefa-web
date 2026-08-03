@@ -1756,6 +1756,95 @@ input.field-error { box-shadow: 0 0 0 4px rgba(224,82,82,.15); }
 
 .findus-hours { color: #4a3a63; font-size: .95rem; margin-bottom: 16px; }
 
+/* ============ AVISO DE COOKIES ============ */
+.cookiebar {
+  position: fixed;
+  left: 14px; right: 14px; bottom: 14px;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  background: rgba(27,8,54,.96);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--coral);
+  border-radius: 18px;
+  padding: 14px 20px;
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
+}
+
+.cookiebar p { font-size: .85rem; font-weight: 600; max-width: 620px; }
+
+.cookiebar a { color: var(--coral-light); font-weight: 700; }
+
+.cookiebar-btns { display: flex; gap: 8px; }
+
+.cookie-ok, .cookie-no {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: .85rem;
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.cookie-ok { background: var(--coral); color: var(--purple-deep); border: none; }
+.cookie-ok:hover { background: var(--coral-hot); }
+
+.cookie-no { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,.35); }
+.cookie-no:hover { border-color: var(--white); }
+
+/* ============ PÁGINAS LEGALES ============ */
+.legal {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 36px 22px 80px;
+  color: var(--ink);
+}
+
+.legal-back {
+  display: inline-block;
+  color: var(--purple);
+  font-weight: 700;
+  font-size: .9rem;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.legal-back:hover { color: var(--coral-hot); }
+
+.legal-mascot { width: 96px; display: block; }
+
+.legal h1 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  text-transform: uppercase;
+  color: var(--purple);
+  margin: 6px 0 4px;
+}
+
+.legal-date { font-size: .82rem; color: #8a7a9b; margin-bottom: 26px; }
+
+.legal h2 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--purple);
+  margin: 26px 0 8px;
+}
+
+.legal p, .legal li { font-size: .95rem; color: #4a3a63; margin-bottom: 10px; }
+
+.legal ul { padding-left: 22px; }
+
+.legal a { color: var(--coral-hot); font-weight: 700; }
+
+.legal-cta { margin-top: 30px; }
+
 /* ============ ANTESALA DE LANZAMIENTO ============ */
 .gate {
   position: fixed;

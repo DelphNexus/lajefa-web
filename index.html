@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body>
@@ -360,6 +360,7 @@
       </a>
     </div>
     <p class="footer-note">El costo del domicilio se coordina por WhatsApp.</p>
+    <p class="footer-note"><a href="privacidad.html">Privacidad y cookies</a></p>
     <p class="footer-copy">© 2026 La Jefa Darkitchen · Hecho con 💜 en Cayambe</p>
     <p class="footer-credit">
       <span class="footer-verse">Mateo 18:15 para Salmo 133:1</span>
@@ -526,7 +527,19 @@
   </div>
 </div>
 
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
+
+<!-- Aviso de cookies (solo la primera visita) -->
+<div class="cookiebar" id="cookiebar" hidden>
+  <p>🍪 Usamos cookies propias y de Meta para mejorar la web y mostrarte
+     mejores anuncios. <a href="privacidad.html">Más info</a></p>
+  <div class="cookiebar-btns">
+    <button type="button" id="cookieNo" class="cookie-no">Rechazar</button>
+    <button type="button" id="cookieOk" class="cookie-ok">Aceptar</button>
+  </div>
+</div>
+
+<!-- Meta Pixel (se carga desde app.js solo si el visitante no lo rechazó) -->
 
 <!-- Cloudflare Web Analytics (contador de visitas, sin cookies) -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js"
