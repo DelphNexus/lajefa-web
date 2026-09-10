@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body>
@@ -45,11 +45,9 @@
     <p class="gate-when">🗓️ Lunes 3 de agosto · 3:30 PM</p>
 
     <div class="gate-deal">
-      <span class="gate-off">10%</span>
-      <span>Ese día se activa el código<br><strong>LAJEFA10</strong> — solo por la web</span>
+      <span class="gate-off">🎁</span>
+      <span>Los <strong>primeros 20 pedidos</strong> del lunes<br>llevan <strong>papas gratis</strong></span>
     </div>
-
-    <p class="gate-prize">🎁 Los <strong>primeros 20 pedidos</strong> del lunes llevan <strong>papas gratis</strong></p>
 
     <div class="gate-actions">
       <button class="btn btn-coral btn-big" id="peekBtn">👀 Espía el menú</button>
@@ -216,7 +214,7 @@
       <span class="section-eyebrow">Hechas al momento</span>
       <h2 class="section-title">Hamburguesas</h2>
       <p class="section-sub">Todas incluyen la salsa secreta de Lupita y tu pan favorito.
-        Hazla combo con Classic Fries + bebida por <strong>+$1.75</strong>.</p>
+        <span id="comboPitch">Hazla combo con Classic Fries + bebida por <strong>+$1.75</strong>.</span></p>
     </div>
     <div class="grid" id="gridBurgers"></div>
   </section>
@@ -404,7 +402,7 @@
         <h4><span class="step-num">3</span> ¿La haces combo?</h4>
         <label class="check-row combo-row">
           <input type="checkbox" id="comboCheck">
-          <span>🍟 Sí, con Classic Fries + bebida <strong>+$1.75</strong></span>
+          <span>🍟 Sí, con Classic Fries + bebida <strong id="comboPriceLabel">+$1.75</strong></span>
         </label>
         <div id="comboDrink" class="opt-sub" hidden>
           <div class="opt-list" id="comboDrinkOptions"></div>
@@ -489,24 +487,7 @@
           <input type="text" id="cashWith" placeholder="Ej: $20" inputmode="decimal">
         </div>
       </div>
-      <div class="promo-code">
-        <label for="promoInput">🎟️ ¿Tienes un código de descuento?</label>
-        <div class="promo-code-row">
-          <input type="text" id="promoInput" placeholder="Escribe tu código" autocapitalize="characters" autocomplete="off">
-          <button type="button" id="promoApply">Aplicar</button>
-        </div>
-        <p class="promo-msg" id="promoMsg" hidden></p>
-      </div>
-
       <div class="cart-total-box">
-        <div class="cart-line" id="subtotalLine" hidden>
-          <span>Subtotal</span>
-          <span id="cartSubtotal">$0.00</span>
-        </div>
-        <div class="cart-line discount" id="discountLine" hidden>
-          <span id="discountLabel">Descuento</span>
-          <span id="cartDiscount">-$0.00</span>
-        </div>
         <div class="cart-total">
           <span>Total</span>
           <strong id="cartTotal">$0.00</strong>
@@ -527,7 +508,7 @@
   </div>
 </div>
 
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 
 <!-- Aviso de cookies (solo la primera visita) -->
 <div class="cookiebar" id="cookiebar" hidden>

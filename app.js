@@ -1,7 +1,14 @@
 /* ===== LA JEFA DARKITCHEN — Carrito + WhatsApp ===== */
 
 const WHATSAPP = "593998939215";
-const COMBO_PRICE = 1.75;
+/* Combo = papas clásicas + una bebida personal. El adicional base es
+   COMBO_ADDON y algunas bebidas le suman un recargo (hoy solo la Fuze Tea).
+   Es la misma regla del bot (COMBO_DRINK_SURCHARGE en su menu.ts): si cambia
+   el adicional, el combo con Fuze Tea lo sigue solo. La clave tiene que ser
+   EXACTAMENTE el nombre de la bebida que viaja en el mensaje ("Fuze Tea"). */
+const COMBO_ADDON = 1.75;
+const DRINK_SURCHARGE = { "Fuze Tea": 0.25 };
+const comboPrice = (drink) => Math.round((COMBO_ADDON + (DRINK_SURCHARGE[drink] ?? 0)) * 100) / 100;
 
 /* ===== LANZAMIENTO =====
    Hasta esta fecha la web está en "antesala": se ve el menú pero los pedidos
@@ -73,18 +80,22 @@ const COMBO_DRINKS = ["Pepsi", "Seven Up", "Fuze Tea", "Agua sin gas"];
 
 /* === Personalización estilo caja (POS de La Jefa) ===
    0 = sin · default = incluido · más = extra (se cobra c/u). Quitar es gratis. */
+/* `pos` = nombre EXACTO con el que el extra existe en la caja de La Jefa.
+   Es lo que viaja en el mensaje de WhatsApp. Si se manda otro nombre, el
+   sistema cobra el producto equivocado (ej. "Aros de cebolla" es la PORCIÓN
+   de $2.00; el topping es "Aros de cebolla (extra)" de $0.50). */
 const INGREDIENTS = [
-  { id: "carne", name: "Carne", price: 1.00, emoji: "🥩" },
-  { id: "queso", name: "Queso", price: 1.00, emoji: "🧀" },
-  { id: "salsa", name: "Salsa secreta", price: 0, emoji: "🤫" },
-  { id: "mermelada", name: "Mermelada de tocino", price: 1.00, emoji: "🥓" },
-  { id: "tocino", name: "Tocino crujiente", price: 1.00, emoji: "🥓" },
-  { id: "cebolla", name: "Cebolla caramelizada", price: 0.50, emoji: "🧅" },
-  { id: "aros", name: "Aros de cebolla", price: 0.50, emoji: "🧅" },
-  { id: "huevo", name: "Huevo", price: 0.50, emoji: "🍳" },
-  { id: "chorizo", name: "Chorizo", price: 1.00, emoji: "🌭" },
-  { id: "pina", name: "Piña caramelizada", price: 1.00, emoji: "🍍" },
-  { id: "aji", name: "Ají", price: 0, emoji: "🌶️" },
+  { id: "carne", name: "Carne", pos: "Extra carne", price: 1.00, emoji: "🥩" },
+  { id: "queso", name: "Queso", pos: "Extra queso", price: 1.00, emoji: "🧀" },
+  { id: "salsa", name: "Salsa secreta", pos: "Extra salsa", price: 0, emoji: "🤫" },
+  { id: "mermelada", name: "Mermelada de tocino", pos: "Mermelada de tocino", price: 1.00, emoji: "🥓" },
+  { id: "tocino", name: "Tocino crujiente", pos: "Tocino crujiente", price: 1.00, emoji: "🥓" },
+  { id: "cebolla", name: "Cebolla caramelizada", pos: "Cebolla caramelizada", price: 0.50, emoji: "🧅" },
+  { id: "aros", name: "Aros de cebolla", pos: "Aros de cebolla (extra)", price: 0.50, emoji: "🧅" },
+  { id: "huevo", name: "Huevo", pos: "Huevo", price: 0.50, emoji: "🍳" },
+  { id: "chorizo", name: "Chorizo", pos: "Chorizo", price: 1.00, emoji: "🌭" },
+  { id: "pina", name: "Piña caramelizada", pos: "Piña caramelizada", price: 1.00, emoji: "🍍" },
+  { id: "aji", name: "Ají", pos: "Ají", price: 0, emoji: "🌶️" },
 ];
 
 /* Receta por defecto de cada burger (lo que no aparece = 0) */
@@ -98,14 +109,14 @@ const BURGER_DEFAULTS = {
 
 /* Toppings por cantidad para papas */
 const PAPA_TOPPINGS = [
-  { id: "cebolla", name: "Cebolla caramelizada", price: 0.50 },
-  { id: "huevo", name: "Huevo", price: 0.50 },
-  { id: "aros", name: "Aros de cebolla", price: 0.50 },
-  { id: "aji", name: "Ají", price: 0 },
-  { id: "tocino", name: "Tocino crujiente", price: 1.00 },
-  { id: "carnequeso", name: "Carne y queso", price: 1.00 },
-  { id: "mermelada", name: "Mermelada de tocino", price: 1.00 },
-  { id: "chorizo", name: "Chorizo", price: 1.00 },
+  { id: "cebolla", name: "Cebolla caramelizada", pos: "Cebolla caramelizada", price: 0.50 },
+  { id: "huevo", name: "Huevo", pos: "Huevo", price: 0.50 },
+  { id: "aros", name: "Aros de cebolla", pos: "Aros de cebolla (extra)", price: 0.50 },
+  { id: "aji", name: "Ají", pos: "Ají", price: 0 },
+  { id: "tocino", name: "Tocino crujiente", pos: "Tocino crujiente", price: 1.00 },
+  { id: "carnequeso", name: "Carne y queso", pos: "Carne y queso", price: 1.00 },
+  { id: "mermelada", name: "Mermelada de tocino", pos: "Mermelada de tocino", price: 1.00 },
+  { id: "chorizo", name: "Chorizo", pos: "Chorizo", price: 1.00 },
 ];
 
 /* Ingredientes ya incluidos en papas (se pueden quitar gratis) */
@@ -191,7 +202,7 @@ const MENU = {
   drinks: [
     { id: "pepsi", name: "Pepsi Personal", price: 0.50, emoji: "🥤", img: "images/pepsi.jpg", desc: "Bien fría." },
     { id: "sevenup", name: "Seven Up Personal", price: 0.50, emoji: "🥤", img: "images/sevenup.jpg", desc: "Bien fría." },
-    { id: "fuzetea", name: "Fuze Tea", price: 0.50, emoji: "🧋", img: "images/fuze-tea.jpg", desc: "Té frío refrescante." },
+    { id: "fuzetea", name: "Fuze Tea", price: 0.80, emoji: "🧋", img: "images/fuze-tea.jpg", desc: "Té frío refrescante." },
     { id: "agua", name: "Agua sin Gas", price: 0.50, emoji: "💧", img: "images/agua.jpg", desc: "Agua natural." },
     { id: "pepsi1l", name: "Pepsi 1L", price: 1.00, emoji: "🥤", img: "images/pepsi-1l.jpg", desc: "Para compartir." },
     { id: "sevenup1l", name: "Seven Up 1L", price: 1.00, emoji: "🥤", img: "images/sevenup-1l.jpg", desc: "Para compartir." },
@@ -228,6 +239,12 @@ document.getElementById("gridBurgers").innerHTML = MENU.burgers.map((it, i) => c
 document.getElementById("gridCombos").innerHTML = MENU.combos.map((it, i) => cardHTML(it, "combos", i)).join("");
 document.getElementById("gridSides").innerHTML = MENU.sides.map((it, i) => cardHTML(it, "sides", i)).join("");
 document.getElementById("gridDrinks").innerHTML = MENU.drinks.map((it, i) => cardHTML(it, "drinks", i)).join("");
+
+/* La frase del combo sale de las constantes: si cambia el adicional o el
+   recargo, el texto se actualiza solo (nada de precios escritos a mano). */
+document.getElementById("comboPitch").innerHTML =
+  `Hazla combo con Classic Fries + bebida por <strong>+${money(COMBO_ADDON)}</strong>` +
+  Object.keys(DRINK_SURCHARGE).map(d => ` (<strong>+${money(comboPrice(d))}</strong> con ${d})`).join("") + ".";
 
 /* ===== REVEAL ON SCROLL ===== */
 const io = new IntersectionObserver((entries) => {
@@ -287,7 +304,12 @@ function priceOf(line) {
   if (!item) return null;                       // producto que ya no existe
 
   let p = item.price;
-  if (line.combo && item.combo) p += COMBO_PRICE;
+  if (line.combo && item.combo) {
+    /* Una bebida que no está en la lista (carrito viejo o manipulado) pasa a
+       la primera: así el recargo y la bebida del mensaje siempre coinciden. */
+    if (!COMBO_DRINKS.includes(line.comboDrink)) line.comboDrink = COMBO_DRINKS[0];
+    p += comboPrice(line.comboDrink);
+  }
 
   const catalogo = line.type === "burgers" ? INGREDIENTS : PAPA_TOPPINGS;
   for (const ex of line.extras || []) {
@@ -364,8 +386,10 @@ function openModal(type, id) {
   if (item.combo) {
     document.getElementById("comboDrinkOptions").innerHTML =
       `<p class="opt-hint">Elige la bebida de tu combo:</p>` +
-      COMBO_DRINKS.map((d, i) =>
-        `<button class="opt-chip ${i === 0 ? "selected" : ""}" data-drink="${d}">${d}</button>`).join("");
+      COMBO_DRINKS.map((d, i) => {
+        const extra = DRINK_SURCHARGE[d] ? ` <small class="chip-extra">+${money(DRINK_SURCHARGE[d])}</small>` : "";
+        return `<button class="opt-chip ${i === 0 ? "selected" : ""}" data-drink="${d}">${d}${extra}</button>`;
+      }).join("");
   }
   if (isBurger || isPapa) renderIngredients();
 
@@ -448,7 +472,7 @@ function priceParts() {
       if (q > 0 && t.price) parts.push({ label: `${t.name} ×${q}`, amount: q * t.price });
     }
   }
-  if (current.combo) parts.push({ label: `Combo (fries + ${current.comboDrink})`, amount: COMBO_PRICE });
+  if (current.combo) parts.push({ label: `Combo (fries + ${current.comboDrink})`, amount: comboPrice(current.comboDrink) });
   return parts;
 }
 
@@ -459,6 +483,8 @@ function unitPrice() {
 function updateModalTotal() {
   const parts = priceParts();
   document.getElementById("modalTotal").textContent = money(unitPrice() * current.qty);
+  /* El combo muestra el precio de la bebida elegida (+$2.00 con Fuze Tea) */
+  document.getElementById("comboPriceLabel").textContent = `+${money(comboPrice(current.comboDrink))}`;
   const bd = document.getElementById("priceBreakdown");
   bd.innerHTML = parts.length > 1
     ? parts.map(p => `<div class="bd-row"><span>${p.label}</span><span>${money(p.amount)}</span></div>`).join("")
@@ -593,59 +619,6 @@ document.querySelector(".menu").addEventListener("click", (e) => {
   if (card) openModal(card.dataset.type, card.dataset.id);
 });
 
-/* ===== CÓDIGOS DE DESCUENTO =====
-   Para agregar otro código: copia la línea y cambia nombre y porcentaje.
-   Se aplica sobre el subtotal del pedido (el domicilio se cobra aparte). */
-const DISCOUNTS = {
-  LAJEFA10: { percent: 10 },
-};
-
-let appliedCode = null;
-try { appliedCode = localStorage.getItem("lajefa-code") || null; } catch { appliedCode = null; }
-if (appliedCode && !DISCOUNTS[appliedCode]) appliedCode = null;
-
-function discountAmount(subtotal) {
-  if (!appliedCode) return 0;
-  return Math.round(subtotal * DISCOUNTS[appliedCode].percent) / 100;
-}
-
-function promoFeedback(texto, ok) {
-  const el = document.getElementById("promoMsg");
-  el.textContent = texto;
-  el.className = `promo-msg ${ok ? "ok" : "err"}`;
-  el.hidden = false;
-}
-
-function applyCode() {
-  const input = document.getElementById("promoInput");
-  const code = input.value.trim().toUpperCase();
-
-  if (!code) return promoFeedback("Escribe un código para aplicarlo.", false);
-
-  if (!DISCOUNTS[code]) {
-    appliedCode = null;
-    localStorage.removeItem("lajefa-code");
-    promoFeedback("Ese código no existe o ya venció 😕", false);
-    return renderCart();
-  }
-
-  appliedCode = code;
-  localStorage.setItem("lajefa-code", code);
-  input.value = code;
-  promoFeedback(`✅ ¡Código aplicado! ${DISCOUNTS[code].percent}% de descuento`, true);
-  renderCart();
-}
-
-document.getElementById("promoApply").addEventListener("click", applyCode);
-document.getElementById("promoInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") { e.preventDefault(); applyCode(); }
-});
-
-if (appliedCode) {
-  document.getElementById("promoInput").value = appliedCode;
-  promoFeedback(`✅ ¡Código aplicado! ${DISCOUNTS[appliedCode].percent}% de descuento`, true);
-}
-
 /* ===== CARRITO ===== */
 const cartOverlay = document.getElementById("cartOverlay");
 
@@ -669,22 +642,13 @@ cartOverlay.addEventListener("click", (e) => { if (e.target === cartOverlay) clo
 function renderCart() {
   const itemsEl = document.getElementById("cartItems");
   cart = sanitizeCart(cart);
-  const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
+  const total = cart.reduce((s, i) => s + i.unit * i.qty, 0);
   const count = cart.reduce((s, i) => s + i.qty, 0);
-  const descuento = discountAmount(subtotal);
-  const total = subtotal - descuento;
 
   document.getElementById("cartCount").textContent = count;
   document.getElementById("cartEmpty").style.display = cart.length ? "none" : "block";
   document.getElementById("cartFooter").hidden = !cart.length;
 
-  document.getElementById("subtotalLine").hidden = !descuento;
-  document.getElementById("discountLine").hidden = !descuento;
-  document.getElementById("cartSubtotal").textContent = money(subtotal);
-  document.getElementById("cartDiscount").textContent = `-${money(descuento)}`;
-  if (descuento) {
-    document.getElementById("discountLabel").textContent = `Descuento (${appliedCode} · ${DISCOUNTS[appliedCode].percent}%)`;
-  }
   document.getElementById("cartTotal").textContent = money(total);
   renderSuggestions();
 
@@ -851,24 +815,40 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   const name = document.getElementById("custName").value.trim();
   const address = document.getElementById("custAddress").value.trim();
   const cashWith = document.getElementById("cashWith").value.trim();
-  const subtotal = cart.reduce((s, i) => s + i.unit * i.qty, 0);
-  const descuento = discountAmount(subtotal);
-  const total = subtotal - descuento;
+  const total = cart.reduce((s, i) => s + i.unit * i.qty, 0);
 
   let msg = "🍔 *NUEVO PEDIDO — LA JEFA DARKITCHEN*\n\n";
 
+  /* El producto va a su PRECIO DE MENÚ y cada extra pagado va en su propia
+     línea con el nombre exacto de la caja y su precio. Así la caja cobra lo
+     mismo que vio el cliente y no confunde un topping con una porción. */
   cart.forEach((item) => {
-    msg += `▪️ ${item.qty}x *${item.name}* — ${money(item.unit * item.qty)}\n`;
+    const catalogo = item.type === "burgers" ? INGREDIENTS : PAPA_TOPPINGS;
+    const base = MENU[item.type].find(p => p.id === item.id);
+    const precioMenu = base ? base.price : item.unit;
+
+    msg += `▪️ ${item.qty}x *${item.name}* — ${money(precioMenu * item.qty)}\n`;
     if (item.bread) msg += `   🥖 ${item.bread}\n`;
-    if (item.combo) msg += `   🍟 Combo (Classic Fries + ${item.comboDrink})\n`;
-    (item.lines || []).forEach(l => { msg += `   ▫️ ${l}\n`; });
+    if (item.combo) msg += `   🍟 Combo (Classic Fries + ${item.comboDrink}) — ${money(comboPrice(item.comboDrink) * item.qty)}\n`;
+
+    /* Lo que se QUITA es gratis: solo informa a la cocina */
+    (item.lines || []).filter(l => l.startsWith("Sin ")).forEach(l => {
+      msg += `   ➖ ${l}\n`;
+    });
+
+    /* Cada EXTRA es una línea propia con nombre de caja y precio */
+    (item.extras || []).forEach(ex => {
+      const ing = catalogo.find(i => i.id === ex.id);
+      if (!ing) return;
+      const cantidad = ex.qty * item.qty;
+      const costo = ing.price * cantidad;
+      msg += `   ➕ ${ing.pos} ×${cantidad}`;
+      msg += costo > 0 ? ` — ${money(costo)}\n` : ` (sin costo)\n`;
+    });
+
     if (item.note) msg += `   📝 ${item.note}\n`;
   });
 
-  if (descuento) {
-    msg += `\nSubtotal: ${money(subtotal)}`;
-    msg += `\n🎟️ Descuento *${appliedCode}* (${DISCOUNTS[appliedCode].percent}%): -${money(descuento)}`;
-  }
   msg += `\n💰 *Total: ${money(total)}*`;
   msg += orderMode === "Delivery" ? `\n_(sin incluir domicilio)_\n` : `\n`;
 
@@ -1016,8 +996,8 @@ setInterval(updateStatus, 60000);
 const PROMO = {
   active: true,
   eyebrow: "⚡ La Jefa Cyber Week",
-  title: "10% OFF en toda la web",
-  desc: "Del 3 al 8 de agosto usa el código LAJEFA10 en tus pedidos por la web. 🎁 Los primeros 20 pedidos del lunes llevan papas gratis.",
+  title: "Papas gratis de estreno",
+  desc: "Del 3 al 8 de agosto estrenamos pedidos por la web. 🎁 Los primeros 20 pedidos del lunes llevan papas clásicas gratis.",
   desde: new Date("2026-08-03T15:30:00-05:00").getTime(),
   hasta: new Date("2026-08-08T22:00:00-05:00").getTime(),
 };

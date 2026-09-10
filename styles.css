@@ -1040,6 +1040,10 @@ img { max-width: 100%; }
 
 .opt-chip:hover { border-color: var(--coral); }
 
+/* Recargo de una bebida del combo (ej. Fuze Tea +$0.25) */
+.chip-extra { font-size: .72rem; font-weight: 800; color: var(--coral-hot); margin-left: 2px; }
+.opt-chip.selected .chip-extra { color: var(--coral-light); }
+
 .opt-chip.selected {
   background: var(--purple);
   border-color: var(--purple);
