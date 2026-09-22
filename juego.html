@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>RUN, LUPITA, RUN! — El juego de La Jefa</title>
+<meta name="description" content="Corre con Lupita, salta obstáculos y come hamburguesas. El mejor puntaje del mes gana una burger de La Jefa Darkitchen.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lajefa.delphbrothers.com/juego.html">
+<meta property="og:site_name" content="La Jefa Darkitchen">
+<meta property="og:title" content="RUN, LUPITA, RUN! 🐶🍔">
+<meta property="og:description" content="Salta obstáculos, come burgers y gana una hamburguesa con el mejor puntaje del mes.">
+<meta property="og:image" content="https://lajefa.delphbrothers.com/images/brand/mascota-circulo.png">
+<meta name="theme-color" content="#331460">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=14">
+<link rel="stylesheet" href="juego.css?v=1">
+<link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
+</head>
+<body class="game-body">
+
+<header class="g-top">
+  <a href="index.html" class="g-back">← Menú</a>
+  <img src="images/brand/logo-blanco.png" alt="La Jefa Darkitchen" class="g-logo">
+  <button class="g-icon" id="muteBtn" type="button" aria-label="Apagar sonido">🔊</button>
+</header>
+
+<main class="g-main">
+  <h1 class="g-title">Run, Lupita, <em>Run!</em></h1>
+  <p class="g-prize">🏆 El mejor puntaje del mes gana <strong>una hamburguesa</strong></p>
+
+  <div class="g-stage" id="stage">
+    <canvas id="game" aria-label="Juego: Lupita corre, salta obstáculos y come hamburguesas"></canvas>
+
+    <div class="g-overlay" id="startScreen">
+      <button class="btn btn-coral btn-big g-play" id="playBtn" type="button">▶ ¡A correr!</button>
+      <p class="g-legend">🍔 +10 · 🍟 +5 · ⭐ +50 ¡e invencible!</p>
+    </div>
+
+    <div class="g-overlay g-paused" id="pauseScreen" hidden>
+      <p>⏸ Pausa</p>
+      <span>Toca para seguir</span>
+    </div>
+  </div>
+
+  <p class="g-howto">👆 <strong>Toca la pantalla</strong> (o barra espaciadora) para saltar.
+    Mantén presionado para saltar más alto.</p>
+
+  <section class="g-rank" aria-labelledby="rankTitle">
+    <h2 id="rankTitle">🏆 Ranking de <span id="rankMes">este mes</span></h2>
+    <p class="g-rank-sub" id="rankCierra"></p>
+    <ol class="g-rank-list" id="rankList"></ol>
+    <p class="g-rank-empty" id="rankEmpty" hidden></p>
+    <div class="g-winners" id="winners" hidden>
+      <h3>Ganadores anteriores</h3>
+      <ul id="winnersList"></ul>
+    </div>
+  </section>
+
+  <details class="g-bases" id="bases">
+    <summary>📜 Bases del concurso</summary>
+    <ol>
+      <li><strong>Quién juega:</strong> cualquier persona puede jugar gratis. Para entrar
+        al ranking hay que guardar el puntaje con un nombre y un celular de Ecuador.</li>
+      <li><strong>Periodo:</strong> cada concurso dura un mes calendario, del día 1 a las
+        00:00 al último día a las 23:59 (hora de Ecuador). El ranking se reinicia cada mes.</li>
+      <li><strong>Ganador:</strong> el puntaje más alto del mes. Cuenta solo el mejor
+        puntaje de cada persona. Si hay empate, gana quien lo logró primero.</li>
+      <li><strong>Premio:</strong> una hamburguesa de La Jefa por mes. No se cambia por
+        dinero. Se entrega a domicilio junto con un pedido o se coordina por WhatsApp.</li>
+      <li><strong>Aviso:</strong> escribimos al ganador por WhatsApp en los primeros días del
+        mes siguiente. Tiene 15 días para reclamar su premio; si no responde, el premio
+        pasa al segundo lugar.</li>
+      <li><strong>Juego limpio:</strong> un celular = una persona. Si detectamos trampas
+        (programas, puntajes imposibles o varios números de la misma persona), el puntaje
+        se elimina.</li>
+      <li><strong>Tus datos:</strong> tu nombre aparece en el ranking. Tu celular
+        <strong>no se publica</strong> y solo lo usamos para avisarte si ganas.
+        Más detalles en <a href="privacidad.html">Privacidad</a>.</li>
+    </ol>
+  </details>
+</main>
+
+<!-- ===== FIN DE PARTIDA ===== -->
+<div class="g-modal" id="overScreen" hidden>
+  <div class="g-card" role="dialog" aria-modal="true" aria-labelledby="frase">
+    <img src="images/juego/lupita-cabeza.png" alt="" class="g-card-mascot">
+    <p class="g-frase" id="frase">¡Se me cayó la burger!</p>
+    <p class="g-score"><span id="finalScore">0</span><small>puntos</small></p>
+    <p class="g-stats" id="finalStats"></p>
+    <p class="g-record" id="newRecord" hidden>⭐ ¡Nuevo récord personal!</p>
+
+    <form class="g-form" id="saveForm" novalidate hidden>
+      <p class="g-form-title">Guarda tu puntaje y compite por la burger del mes 🍔</p>
+      <label>
+        <span>Tu nombre (sale en el ranking)</span>
+        <input id="fNombre" name="nombre" maxlength="16" autocomplete="given-name" placeholder="Ej: Lupe" required>
+      </label>
+      <label>
+        <span>Tu WhatsApp (no se publica)</span>
+        <input id="fTel" name="telefono" type="tel" inputmode="tel" maxlength="16" autocomplete="tel" placeholder="09…" required>
+      </label>
+      <label class="g-check">
+        <input type="checkbox" id="fAcepta" required>
+        <span>Acepto las <a href="#bases" id="basesLink">bases del concurso</a> y que me escriban por WhatsApp si gano.</span>
+      </label>
+      <button class="btn btn-coral" id="saveBtn" type="submit">🏆 Guardar mi puntaje</button>
+    </form>
+    <p class="g-save-msg" id="saveMsg" hidden></p>
+
+    <div class="g-card-actions">
+      <button class="btn btn-purple btn-big" id="againBtn" type="button">↻ Jugar otra vez</button>
+      <a class="g-card-link" href="index.html">🍔 Ver el menú</a>
+    </div>
+  </div>
+</div>
+
+<script src="juego.js?v=1"></script>
+</body>
+</html>

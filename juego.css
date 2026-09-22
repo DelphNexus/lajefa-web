@@ -1,0 +1,313 @@
+/* ===== RUN, LUPITA, RUN! — página del juego ===== */
+
+.game-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(700px 380px at 50% -8%, rgba(242,145,124,.32), transparent 65%),
+    linear-gradient(170deg, var(--purple-deep), var(--purple) 55%, var(--purple-dark));
+  background-attachment: fixed;
+  color: var(--white);
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Barra de arriba ---------- */
+.g-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+}
+
+.g-back {
+  color: var(--coral-light);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: .95rem;
+  min-width: 70px;
+}
+
+.g-logo { height: 54px; width: auto; }
+
+.g-icon {
+  min-width: 70px;
+  text-align: right;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ---------- Título ---------- */
+.g-main { max-width: 860px; margin: 0 auto; padding: 4px 16px 0; text-align: center; }
+
+.g-title {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 7.5vw, 3.2rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 6px 0 6px;
+  text-shadow: 0 4px 0 var(--purple-deep);
+}
+
+.g-title em { font-style: normal; color: var(--coral); }
+
+.g-prize { font-size: .95rem; opacity: .95; margin-bottom: 14px; }
+
+.g-prize strong { color: var(--coral-light); }
+
+/* ---------- Escenario ---------- */
+.g-stage {
+  position: relative;
+  width: min(100%, 820px, calc(68vh * 1.6));
+  aspect-ratio: 8 / 5;
+  margin: 0 auto;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--cream);
+  box-shadow: 0 0 0 4px var(--white), var(--shadow-lg);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.g-stage canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+
+.g-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(51, 20, 96, .22);
+}
+
+.g-play { font-size: clamp(1rem, 4vw, 1.25rem); animation: g-pulse 1.6s ease-in-out infinite; }
+
+.g-legend {
+  background: rgba(255,255,255,.92);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: clamp(.72rem, 2.8vw, .9rem);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.g-paused { background: rgba(51, 20, 96, .6); cursor: pointer; }
+
+.g-paused p { font-family: var(--font-head); font-size: 2rem; }
+
+@keyframes g-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.g-howto { font-size: .88rem; opacity: .85; margin: 14px auto 26px; max-width: 520px; }
+
+/* ---------- Ranking ---------- */
+.g-rank {
+  background: var(--white);
+  color: var(--ink);
+  border-radius: 22px;
+  padding: 22px 18px;
+  max-width: 520px;
+  margin: 0 auto 18px;
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+}
+
+.g-rank h2 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  color: var(--purple);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.g-rank-sub { text-align: center; font-size: .85rem; opacity: .7; margin-bottom: 14px; }
+
+.g-rank-list { list-style: none; counter-reset: pos; }
+
+.g-rank-list li {
+  counter-increment: pos;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+.g-rank-list li:nth-child(odd) { background: var(--cream); }
+
+.g-rank-list li::before {
+  content: counter(pos);
+  flex: 0 0 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--coral-soft);
+  color: var(--purple);
+  font-family: var(--font-head);
+}
+
+.g-rank-list li:first-child { background: var(--purple); color: var(--white); }
+
+.g-rank-list li:first-child::before { content: "👑"; background: var(--coral); }
+
+.g-rank-list li:nth-child(2)::before { background: var(--coral-light); }
+
+.g-rank-list .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.g-rank-list .p { font-family: var(--font-head); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+.g-rank-empty { text-align: center; padding: 14px 6px; opacity: .8; }
+
+.g-winners { margin-top: 18px; padding-top: 14px; border-top: 2px dashed var(--coral-soft); }
+
+.g-winners h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; opacity: .65; margin-bottom: 6px; }
+
+.g-winners ul { list-style: none; font-size: .9rem; }
+
+.g-winners li { padding: 3px 0; }
+
+/* ---------- Bases ---------- */
+.g-bases {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: left;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 18px;
+  padding: 14px 18px;
+  font-size: .88rem;
+}
+
+.g-bases summary { cursor: pointer; font-weight: 700; }
+
+.g-bases ol { margin: 12px 0 2px 18px; display: grid; gap: 8px; }
+
+.g-bases a { color: var(--coral-light); }
+
+/* ---------- Fin de partida ---------- */
+.g-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px 20px;
+  background: rgba(43, 17, 82, .7);
+  overflow-y: auto;
+  animation: g-fade .25s ease;
+}
+
+.g-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  background: var(--white);
+  color: var(--ink);
+  border-radius: 26px;
+  padding: 60px 22px 22px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: g-pop .35s cubic-bezier(.2,1.4,.4,1);
+}
+
+.g-card-mascot {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  width: 84px;
+  transform: translateX(-50%) rotate(-8deg);
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.25));
+}
+
+.g-frase { font-family: var(--font-head); color: var(--purple); font-size: 1.35rem; line-height: 1.15; }
+
+.g-score { font-family: var(--font-head); color: var(--coral-hot); font-size: 3.4rem; line-height: 1.1; margin-top: 6px; }
+
+.g-score small { display: block; font-size: .85rem; color: var(--ink); opacity: .6; font-family: var(--font-body); letter-spacing: 2px; text-transform: uppercase; }
+
+.g-stats { font-size: .9rem; opacity: .75; margin-top: 4px; }
+
+.g-record { margin-top: 8px; font-weight: 700; color: var(--purple); }
+
+.g-form {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--cream);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  text-align: left;
+}
+
+.g-form > * { min-width: 0; }
+
+.g-form-title { font-weight: 700; font-size: .92rem; text-align: center; color: var(--purple); }
+
+.g-form label { display: grid; gap: 4px; font-size: .78rem; font-weight: 600; }
+
+.g-form input:not([type="checkbox"]) {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 1rem;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--coral-soft);
+  background: var(--white);
+  color: var(--ink);
+}
+
+.g-form input:focus { outline: none; border-color: var(--coral); }
+
+.g-form .g-check { display: flex; gap: 8px; align-items: flex-start; font-weight: 500; line-height: 1.35; }
+
+.g-check input { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--purple); flex: 0 0 auto; }
+
+.g-check a { color: var(--purple); font-weight: 700; }
+
+.g-form .btn { width: 100%; white-space: normal; }
+
+.g-form .btn:disabled { opacity: .6; cursor: wait; transform: none; }
+
+.g-save-msg {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--coral-soft);
+  font-weight: 600;
+  font-size: .92rem;
+}
+
+.g-save-msg.ok { background: #e6f7ec; color: #17603a; }
+
+.g-card-actions { display: grid; gap: 10px; margin-top: 16px; justify-items: center; }
+
+.g-card-actions .btn { width: 100%; }
+
+.g-card-link { color: var(--purple); font-weight: 700; font-size: .9rem; text-decoration: none; }
+
+@keyframes g-fade { from { opacity: 0; } }
+
+@keyframes g-pop { from { transform: scale(.85); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .g-play, .g-modal, .g-card { animation: none; }
+}

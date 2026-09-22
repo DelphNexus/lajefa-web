@@ -2095,6 +2095,21 @@ body.antesala .cart-btn { opacity: .55; }
 
 .thanks-actions .btn-ghost-purple:hover { border-color: var(--white); background: rgba(255,255,255,.1); }
 
+.thanks-game {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  background: rgba(255,255,255,.1);
+  border: 2px dashed rgba(247,179,164,.6);
+  border-radius: 20px;
+  padding: 18px 16px;
+  margin-bottom: 18px;
+}
+
+.thanks-game p { font-family: var(--font-head); font-size: 1.3rem; }
+
+.thanks-game span { font-size: .85rem; opacity: .85; }
+
 .thanks-social { display: flex; justify-content: center; gap: 10px; font-size: .9rem; }
 
 .thanks-social a { color: var(--coral-light); font-weight: 700; text-decoration: none; }

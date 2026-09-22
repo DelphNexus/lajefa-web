@@ -5,3 +5,4 @@ images/*.png
 logo.psd
 deploy.sh
 FOTOS-IA.md
+api/*.db*
