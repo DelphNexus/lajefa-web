@@ -31,7 +31,7 @@ if (SECRET.length < 16 || ADMIN_KEY.length < 8) {
    Sirven para rechazar puntajes imposibles. Si se cambia la velocidad o los
    puntos en juego.js, hay que cambiarlos aquí también. */
 const REGLAS = {
-  velMax: 700,        // px por segundo, la más rápida que corre Lupita
+  velMax: 800,        // px por segundo, la más rápida que corre Lupita
   pxPorPunto: 25,     // cada 25 px recorridos = 1 punto
   burger: 10, papas: 5, sticker: 50,
   itemsPorSeg: 5,     // tope generoso de cosas que se pueden recoger por segundo

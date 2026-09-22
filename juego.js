@@ -14,7 +14,8 @@
      ⚠️ Si se cambian VEL_MAX, PX_POR_PUNTO o PUNTOS, cambiar también
      REGLAS en api/server.js (ahí se revisa que el puntaje sea posible). */
   const W = 480, H = 300, SUELO = 258;
-  const VEL_INICIO = 300, VEL_MAX = 700, ACELERA = 7;   // px/s, px/s por segundo
+  const VEL_INICIO = 300, VEL_MAX = 800, ACELERA = 6;   // px/s, px/s por segundo
+  const PASO_VEL = 22;                                  // empujón extra cada 100 puntos
   const PX_POR_PUNTO = 25;
   const PUNTOS = { burger: 10, papas: 5, sticker: 50 };
   const GRAVEDAD = 2800, SALTO = -820;
@@ -137,7 +138,7 @@
       burgers: 0, papas: 0, stickers: 0,
       y: SUELO - LUPI.h, vy: 0, enPiso: true, sosteniendo: false, tSostenido: 0, pedidoSalto: -1,
       invencible: 0, obstaculos: [], items: [], textos: [],
-      siguiente: 520, ultimoSticker: 0, hito: 100,
+      siguiente: 520, ultimoSticker: 0, hito: 100, nivel: 0, extra: 0, aviso: 0,
       fondo: { lejos: 0, medio: 0, piso: 0 }, temblor: 0, cuadro: 0,
     };
   }
@@ -312,7 +313,10 @@
   /* ---------- Actualizar (cada cuadro) ---------- */
   function actualizar(dt) {
     p.tiempo += dt * 1000;
-    p.vel = Math.min(VEL_MAX, VEL_INICIO + ACELERA * (p.tiempo / 1000));
+    /* Sube poco a poco y, cada 100 puntos, un empujón que se nota. */
+    p.extra += (p.nivel * PASO_VEL - p.extra) * Math.min(1, dt * 3);
+    p.vel = Math.min(VEL_MAX, VEL_INICIO + ACELERA * (p.tiempo / 1000) + p.extra);
+    if (p.aviso > 0) p.aviso -= dt;
     const avance = p.vel * dt;
     p.distancia += avance;
     p.fondo.lejos += avance * 0.08;
@@ -367,7 +371,11 @@
     p.textos = p.textos.filter((t) => t.vida > 0);
 
     const pts = puntaje();
-    if (pts >= p.hito) { p.hito += 100; SON.hito(); }
+    if (pts >= p.hito) {
+      p.hito += 100;
+      SON.hito();
+      if (p.vel < VEL_MAX) { p.nivel++; p.aviso = 1.2; }
+    }
   }
 
   /* ---------- Dibujar ---------- */
@@ -407,6 +415,11 @@
     if (record > 0) texto("RÉCORD " + String(record).padStart(5, "0"), W - 14, 42, 12, C.coralHot, "right");
     texto("🍔 × " + p.burgers, 14, 14, 18, C.morado);
     if (p.invencible > 0) texto("⭐ ¡INVENCIBLE!", W / 2, 14, 16, C.coralHot, "center");
+    if (p.aviso > 0) {
+      ctx.globalAlpha = Math.min(1, p.aviso * 2);
+      texto("¡MÁS RÁPIDO! 🔥", W / 2, 40, 20, C.morado, "center");
+      ctx.globalAlpha = 1;
+    }
   }
 
   /* Escenario provisional: cielo, volcán Cayambe, casitas y vereda a cuadros. */
