@@ -1576,6 +1576,71 @@ input.field-error { box-shadow: 0 0 0 4px rgba(224,82,82,.15); }
 .closed-banner small { opacity: .7; font-weight: 500; width: 100%; font-size: .78rem; }
 
 /* ============ PROMO SEMANA ============ */
+/* ============ JUEGO: RUN, LUPITA, RUN! ============ */
+.game-promo { background: var(--cream); padding: 26px 20px 0; }
+
+.game-promo-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: left;
+  text-decoration: none;
+  color: var(--white);
+  background:
+    radial-gradient(420px 220px at 85% 0%, rgba(242,145,124,.35), transparent 70%),
+    linear-gradient(160deg, var(--purple-deep), var(--purple));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 28px;
+  transition: transform .2s;
+}
+
+.game-promo-inner:hover { transform: translateY(-3px); }
+
+.game-promo-img { width: 130px; height: auto; flex: 0 0 auto; filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
+
+.game-promo-text { flex: 1 1 280px; display: grid; gap: 6px; }
+
+.game-promo-eyebrow {
+  justify-self: start;
+  background: var(--coral);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: .78rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.game-promo-text h2 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-promo-text h2 em { font-style: normal; color: var(--coral); }
+
+.game-promo-text p { opacity: .92; font-size: .95rem; max-width: 52ch; }
+
+.game-promo-text strong { color: var(--coral-light); }
+
+.game-promo-btn { flex: 0 0 auto; }
+
+.tab-game { background: var(--coral); border-color: var(--coral); color: var(--ink); }
+
+@media (max-width: 600px) {
+  .game-promo-inner { text-align: center; padding: 20px 18px; }
+  .game-promo-eyebrow { justify-self: center; }
+  .game-promo-img { width: 110px; }
+  .game-promo-btn { width: 100%; }
+}
+
 .promo { background: var(--cream); padding: 26px 20px 0; }
 
 .promo-inner {
