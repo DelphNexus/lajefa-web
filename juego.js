@@ -13,7 +13,7 @@
   /* ---------- Reglas ----------
      ⚠️ Si se cambian VEL_MAX, PX_POR_PUNTO o PUNTOS, cambiar también
      REGLAS en api/server.js (ahí se revisa que el puntaje sea posible). */
-  const W = 480, H = 300, SUELO = 258;
+  const W = 400, H = 300, SUELO = 258;              // 4:3, igual en celular y computadora
   const VEL_INICIO = 300, VEL_MAX = 800, ACELERA = 6;   // px/s, px/s por segundo
   const PASO_VEL = 22;                                  // empujón extra cada 100 puntos
   const PX_POR_PUNTO = 25;
@@ -22,7 +22,7 @@
   const GRAV_SOSTENIDO = 0.55, SOSTENER_MAX = 0.18;     // mantener presionado = salto más alto
   const INVENCIBLE = 4;                                 // segundos con el sticker
 
-  const LUPI = { x: 64, w: 50, h: 72 };                 // caja donde se dibuja Lupita (en dos patas)
+  const LUPI = { x: 34, w: 50, h: 72 };                 // caja donde se dibuja Lupita (en dos patas)
 
   /* ---------- Arte ----------
      Dibujos finales (images/juego/). Si alguno no carga, el juego usa el
@@ -76,17 +76,31 @@
   const startScreen = $("startScreen"), pauseScreen = $("pauseScreen"), overScreen = $("overScreen");
   const saveForm = $("saveForm"), saveMsg = $("saveMsg"), saveBtn = $("saveBtn");
 
-  /* Canvas nítido en cualquier pantalla: el juego siempre mide 480×300 "por dentro". */
+  /* Canvas nítido en cualquier pantalla: el juego siempre mide 400×300 "por dentro". */
   let escala = 1;
   function ajustarTamano() {
-    const r = stage.getBoundingClientRect();
+    const r = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     canvas.width = Math.round(r.width * dpr);
     canvas.height = Math.round(r.height * dpr);
     escala = canvas.width / W;
   }
   window.addEventListener("resize", ajustarTamano);
+  document.addEventListener("fullscreenchange", () => requestAnimationFrame(ajustarTamano));
   ajustarTamano();
+
+  /* Pantalla completa (Android y computadora; el iPhone no lo permite en páginas web). */
+  const fullBtn = $("fullBtn");
+  if (document.fullscreenEnabled && stage.requestFullscreen) {
+    fullBtn.hidden = false;
+    fullBtn.addEventListener("click", async () => {
+      try {
+        if (document.fullscreenElement) return await document.exitFullscreen();
+        await stage.requestFullscreen({ navigationUI: "hide" });
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {});
+      } catch (e) {}
+    });
+  }
 
   /* ---------- Sonidos (sin archivos: se generan en el momento) ---------- */
   let mudo = local.leer("lupita-mudo", false);
@@ -221,7 +235,10 @@
   });
   window.addEventListener("keyup", (e) => { if (TECLAS.includes(e.code)) soltar(); });
 
-  $("playBtn").addEventListener("click", empezar);
+  $("playBtn").addEventListener("click", () => {
+    empezar();
+    if (!document.fullscreenElement) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
   $("againBtn").addEventListener("click", () => {
     empezar();
     stage.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -441,7 +458,11 @@
   function fondo() {
     /* El cielo y el volcán quedan quietos: están tan lejos que casi no se mueven. */
     const lejos = ARTE["fondo-lejos"];
-    if (lejos.listo) ctx.drawImage(lejos.img, -10, -10, W + 20, SUELO + 20);
+    if (lejos.listo) {
+      const iw = lejos.img.naturalWidth, ih = lejos.img.naturalHeight;
+      const sw = Math.min(iw, ih * (W + 20) / (SUELO + 20));
+      ctx.drawImage(lejos.img, (iw - sw) / 2, 0, sw, ih, -10, -10, W + 20, SUELO + 20);
+    }
     else lejosProvisional();
     if (!banda("fondo-calle", p.fondo.medio, SUELO - 92, 96)) calleProvisional();
     if (!banda("fondo-piso", p.fondo.piso, SUELO, H - SUELO + 2)) pisoProvisional();
@@ -725,6 +746,7 @@
 
   function mostrarFin() {
     if (estado !== "fin") return;
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     const pts = puntaje();
     const nuevo = pts > record;
     if (nuevo) { record = pts; local.poner("lupita-record", record); }
