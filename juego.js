@@ -6,9 +6,9 @@
   "use strict";
 
   /* ⚠️ Dirección del servidor de puntajes (el servicio "api" en EasyPanel),
-     sin "/" al final. Ej: "https://juego-api.delphbrothers.com".
+     sin "/" al final. Ej: "https://runluperun-api.delphbrothers.com".
      Vacío = ranking apagado: se juega igual, pero no se guardan puntajes. */
-  const API_URL = "";
+  const API_URL = "https://runluperun-api.delphbrothers.com";
 
   /* ---------- Reglas ----------
      ⚠️ Si se cambian VEL_MAX, PX_POR_PUNTO o PUNTOS, cambiar también

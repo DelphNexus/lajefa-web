@@ -18,19 +18,19 @@ Es Node puro con SQLite: no necesita `npm install` ni otra base de datos.
    Para inventar un SECRET: cualquier generador de contraseñas, 40 caracteres.
 4. **Mounts → Add Volume**: nombre `puntajes`, mount path `/data`.
    ⚠️ Sin esto, los puntajes se borran cada vez que se actualiza el servicio.
-5. **Domains**: agregar un dominio, por ejemplo `juego-api.delphbrothers.com`,
+5. **Domains**: agregar un dominio, por ejemplo `runluperun-api.delphbrothers.com`,
    puerto **3000**, con HTTPS.
    (Si el DNS es de Cloudflare, crear el registro igual que el de la web.)
-6. **Deploy**. Al abrir `https://juego-api.delphbrothers.com/salud` debe decir `"ok": true`.
+6. **Deploy**. Al abrir `https://runluperun-api.delphbrothers.com/salud` debe decir `"ok": true`.
 7. En `juego.js` (arriba del todo) poner la dirección:
    ```js
-   const API_URL = "https://juego-api.delphbrothers.com";
+   const API_URL = "https://runluperun-api.delphbrothers.com";
    ```
    y volver a publicar la web. Desde ese momento se guardan los puntajes.
 
 ## Panel de La Jefa
 
-`https://juego-api.delphbrothers.com/admin` → escribir la `ADMIN_KEY`.
+`https://runluperun-api.delphbrothers.com/admin` → escribir la `ADMIN_KEY`.
 
 - Muestra el top 30 del mes con el WhatsApp de cada jugador.
 - Botón **💬 Avisarle por WhatsApp** al ganador, con el mensaje ya escrito.
