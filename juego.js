@@ -22,23 +22,23 @@
   const GRAV_SOSTENIDO = 0.55, SOSTENER_MAX = 0.18;     // mantener presionado = salto más alto
   const INVENCIBLE = 4;                                 // segundos con el sticker
 
-  const LUPI = { x: 64, w: 58, h: 50 };                 // caja donde se dibuja Lupita
+  const LUPI = { x: 64, w: 50, h: 72 };                 // caja donde se dibuja Lupita (en dos patas)
 
   /* ---------- Arte ----------
-     Cuando lleguen los dibujos finales (images/juego/), se agregan a esta lista
-     y reemplazan solos al arte provisional. [nombre, cuadros de animación] */
+     Dibujos finales (images/juego/). Si alguno no carga, el juego usa el
+     arte provisional dibujado por código. [nombre, cuadros de animación] */
   const ARTE_FINAL = [
-    // ["lupita-correr", 4], ["lupita-salto", 1], ["lupita-choque", 1],
-    // ["obs-salsa", 1], ["obs-cono", 1], ["obs-caja", 1], ["obs-aceite", 1], ["obs-paloma", 2],
-    // ["item-burger", 1], ["item-papas", 1], ["item-sticker", 1],
-    // ["fondo-lejos", 1], ["fondo-calle", 1], ["fondo-piso", 1],
+    ["lupita-base", 1], ["lupita-correr", 4], ["lupita-salto", 1], ["lupita-choque", 1],
+    ["obs-salsa", 1], ["obs-cono", 1], ["obs-caja", 1], ["obs-aceite", 1], ["obs-paloma", 2],
+    ["item-burger", 1], ["item-papas", 1], ["item-sticker", 1],
+    ["fondo-lejos", 1, "jpg"], ["fondo-calle", 1], ["fondo-piso", 1],
   ];
   const ARTE = {};
-  for (const [nombre, cuadros] of [["lupita-cabeza", 1], ...ARTE_FINAL]) {
+  for (const [nombre, cuadros, ext = "png"] of [["lupita-cabeza", 1], ...ARTE_FINAL]) {
     const img = new Image();
     ARTE[nombre] = { img, cuadros, listo: false };
     img.onload = () => { ARTE[nombre].listo = true; };
-    img.src = `images/juego/${nombre}.png`;
+    img.src = `images/juego/${nombre}.${ext}`;
   }
 
   /* Dibuja un cuadro del arte final ajustado a la caja (pies abajo, centrado).
@@ -232,11 +232,11 @@
 
   /* ---------- Obstáculos y comida ---------- */
   const TIPOS = {
-    salsa:  { w: 22, h: 46 },
-    cono:   { w: 34, h: 38 },
-    caja:   { w: 44, h: 36 },
-    aceite: { w: 64, h: 10 },
-    paloma: { w: 40, h: 26 },
+    salsa:  { w: 20, h: 48 },
+    cono:   { w: 34, h: 42 },
+    caja:   { w: 42, h: 40 },
+    aceite: { w: 66, h: 16 },
+    paloma: { w: 34, h: 32 },
   };
   const ITEM = 26;
   const azar = (a, b) => a + Math.random() * (b - a);
@@ -253,7 +253,7 @@
       /* Paloma: baja (hay que saltarla) o alta (hay que NO saltar). */
       const alta = Math.random() < 0.5;
       const t = TIPOS.paloma;
-      grupo = [{ tipo: "paloma", x, y: alta ? SUELO - 104 : SUELO - 36, w: t.w, h: t.h, extra: 70 }];
+      grupo = [{ tipo: "paloma", x, y: alta ? SUELO - 134 : SUELO - 40, w: t.w, h: t.h, extra: 70 }];
     } else if (pts > 600 && Math.random() < 0.3) {
       /* Dos seguidos */
       const a = elegir(["caja", "cono", "salsa"]), b = elegir(["caja", "cono"]);
@@ -307,7 +307,7 @@
   }
 
   function cajaLupita() {
-    return { x: LUPI.x + 8, y: p.y + 6, w: LUPI.w - 14, h: LUPI.h - 6 };
+    return { x: LUPI.x + 12, y: p.y + 8, w: LUPI.w - 22, h: LUPI.h - 8 };
   }
 
   /* ---------- Actualizar (cada cuadro) ---------- */
@@ -429,7 +429,25 @@
   ];
   const LARGO_CALLE = CASAS.reduce((s, c) => s + c[0] + 10, 0);
 
+  /* Una imagen que se repite de lado a lado y se desplaza (fondos en movimiento). */
+  function banda(nombre, desplazamiento, y, h) {
+    const a = ARTE[nombre];
+    if (!a || !a.listo) return false;
+    const w = a.img.naturalWidth * h / a.img.naturalHeight;
+    for (let x = -(desplazamiento % w); x < W; x += w) ctx.drawImage(a.img, Math.floor(x), y, Math.ceil(w) + 1, h);
+    return true;
+  }
+
   function fondo() {
+    /* El cielo y el volcán quedan quietos: están tan lejos que casi no se mueven. */
+    const lejos = ARTE["fondo-lejos"];
+    if (lejos.listo) ctx.drawImage(lejos.img, -10, -10, W + 20, SUELO + 20);
+    else lejosProvisional();
+    if (!banda("fondo-calle", p.fondo.medio, SUELO - 92, 96)) calleProvisional();
+    if (!banda("fondo-piso", p.fondo.piso, SUELO, H - SUELO + 2)) pisoProvisional();
+  }
+
+  function lejosProvisional() {
     const cielo = ctx.createLinearGradient(0, 0, 0, SUELO);
     cielo.addColorStop(0, C.coralSuave);
     cielo.addColorStop(1, C.crema);
@@ -472,7 +490,9 @@
     }
     ctx.lineTo(W, SUELO);
     ctx.fill();
+  }
 
+  function calleProvisional() {
     /* Casitas (velocidad media) */
     let cx = -(p.fondo.medio % LARGO_CALLE);
     while (cx < W) {
@@ -494,7 +514,9 @@
         cx += w + 10;
       }
     }
+  }
 
+  function pisoProvisional() {
     /* Vereda: borde a cuadros morado y blanco + piso coral */
     ctx.fillStyle = C.coral;
     ctx.fillRect(-10, SUELO, W + 20, H - SUELO + 10);
@@ -520,7 +542,7 @@
     if (p.invencible > 0) {
       ctx.fillStyle = "rgba(242,145,124,.35)";
       ctx.beginPath();
-      ctx.arc(x + w / 2, y + h / 2, 38, 0, Math.PI * 2);
+      ctx.arc(x + w / 2, y + h / 2, 44, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -532,9 +554,11 @@
     ctx.fill();
 
     const cuadro = Math.floor(p.cuadro);
-    const listo = muerta ? sprite("lupita-choque", 0, x, y, w, h)
-      : !p.enPiso ? sprite("lupita-salto", 0, x, y, w, h)
-      : sprite("lupita-correr", estado === "jugando" ? cuadro : 0, x, y, w, h);
+    const bote = estado === "jugando" && p.enPiso ? Math.abs(Math.sin(p.cuadro * Math.PI / 2)) * 4 : 0;
+    const listo = muerta ? sprite("lupita-choque", 0, x - 4, y, w + 8, h)
+      : estado === "inicio" ? sprite("lupita-base", 0, x, y, w, h)
+      : !p.enPiso ? sprite("lupita-salto", 0, x - 6, y, w + 12, h)
+      : sprite("lupita-correr", cuadro, x, y - bote, w, h);
 
     if (!listo) lupitaProvisional(x, y, cuadro, muerta);
     ctx.globalAlpha = 1;
