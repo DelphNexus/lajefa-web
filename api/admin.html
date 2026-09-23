@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Panel del juego — La Jefa</title>
+<style>
+  :root { --purple: #4b2178; --coral: #f2917c; --cream: #fdf6f0; --ink: #2b1152; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; background: var(--cream); color: var(--ink); padding: 20px 16px 60px; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { color: var(--purple); margin: 0 0 4px; font-size: 1.5rem; }
+  p.sub { margin: 0 0 20px; opacity: .75; }
+  form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  input, button { font: inherit; padding: 10px 14px; border-radius: 12px; border: 2px solid #e6d9ee; }
+  input { flex: 1 1 180px; background: #fff; }
+  button { background: var(--purple); color: #fff; border-color: var(--purple); font-weight: 700; cursor: pointer; }
+  button.mini { padding: 6px 10px; font-size: .8rem; background: #fff; color: #b3261e; border-color: #f0c9c5; }
+  .ganador { background: var(--purple); color: #fff; border-radius: 18px; padding: 18px; margin-bottom: 18px; }
+  .ganador strong { font-size: 1.4rem; display: block; }
+  .ganador a { display: inline-block; margin-top: 10px; background: #25d366; color: #fff; padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #f1e8f5; font-size: .9rem; }
+  th { background: #f6eff9; font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; }
+  td.num { font-variant-numeric: tabular-nums; font-weight: 700; }
+  td a { color: var(--purple); }
+  .msg { padding: 12px; border-radius: 12px; background: #fde8e4; margin-bottom: 16px; }
+  .tabla { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🐶 RUN, LUPITA, RUN! · Panel</h1>
+  <p class="sub">Ranking con números de WhatsApp. Solo para La Jefa.</p>
+
+  <form id="f">
+    <input type="password" id="clave" placeholder="Clave (ADMIN_KEY)" autocomplete="current-password" required>
+    <input type="month" id="mes">
+    <button>Ver ranking</button>
+  </form>
+
+  <div id="salida"></div>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const salida = $("salida");
+
+  try { $("clave").value = sessionStorage.getItem("clave") || ""; } catch (e) {}
+  $("mes").value = new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 7);
+
+  function el(tag, props = {}, hijos = []) {
+    const e = Object.assign(document.createElement(tag), props);
+    e.append(...hijos);
+    return e;
+  }
+
+  function bonito(tel) {
+    return "0" + tel.slice(3, 5) + " " + tel.slice(5, 8) + " " + tel.slice(8);
+  }
+
+  async function cargar() {
+    const clave = $("clave").value;
+    try { sessionStorage.setItem("clave", clave); } catch (e) {}
+    salida.textContent = "Cargando…";
+    const r = await fetch("/api/admin?mes=" + encodeURIComponent($("mes").value), {
+      headers: { "x-admin-key": clave },
+    });
+    const d = await r.json();
+    salida.textContent = "";
+    if (!r.ok) return salida.append(el("div", { className: "msg", textContent: d.error }));
+    if (!d.top.length) return salida.append(el("div", { className: "msg", textContent: "Nadie ha guardado puntajes en " + d.mes }));
+
+    const g = d.top[0];
+    const texto = `¡Hola ${g.nombre}! 🐶🏆 Somos La Jefa. Ganaste RUN, LUPITA, RUN! de ${d.mes} con ${g.puntaje} puntos. ¡Tu hamburguesa te espera! Escríbenos para coordinar.`;
+    salida.append(el("div", { className: "ganador" }, [
+      "🏆 Primer lugar de " + d.mes,
+      el("strong", { textContent: `${g.nombre} · ${g.puntaje} pts` }),
+      "WhatsApp: " + bonito(g.telefono),
+      el("br"),
+      el("a", {
+        href: `https://wa.me/${g.telefono}?text=${encodeURIComponent(texto)}`,
+        target: "_blank", rel: "noopener", textContent: "💬 Avisarle por WhatsApp",
+      }),
+    ]));
+
+    const filas = d.top.map((f, i) => el("tr", {}, [
+      el("td", { textContent: i + 1 }),
+      el("td", { textContent: f.nombre }),
+      el("td", { className: "num", textContent: f.puntaje }),
+      el("td", {}, [el("a", { href: "https://wa.me/" + f.telefono, target: "_blank", rel: "noopener", textContent: bonito(f.telefono) })]),
+      el("td", { textContent: "🍔 " + f.burgers + " · " + Math.round(f.duracion / 1000) + " s" }),
+      el("td", { textContent: new Date(f.creado).toLocaleString("es-EC", { timeZone: "America/Guayaquil", dateStyle: "short", timeStyle: "short" }) }),
+      el("td", {}, [el("button", {
+        className: "mini", textContent: "Descalificar",
+        onclick: () => descalificar(d.mes, f),
+      })]),
+    ]));
+
+    salida.append(el("div", { className: "tabla" }, [el("table", {}, [
+      el("thead", {}, [el("tr", {}, ["#", "Nombre", "Puntos", "WhatsApp", "Partida", "Fecha", ""].map((t) => el("th", { textContent: t })))]),
+      el("tbody", {}, filas),
+    ])]));
+  }
+
+  async function descalificar(mes, f) {
+    if (!confirm(`¿Borrar todos los puntajes de ${f.nombre} (${bonito(f.telefono)}) en ${mes}?`)) return;
+    const r = await fetch("/api/admin/descalificar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": $("clave").value },
+      body: JSON.stringify({ mes, telefono: f.telefono }),
+    });
+    if (!r.ok) alert((await r.json()).error);
+    cargar();
+  }
+
+  $("f").addEventListener("submit", (e) => { e.preventDefault(); cargar(); });
+  if ($("clave").value) cargar();
+</script>
+</body>
+</html>
