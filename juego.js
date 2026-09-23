@@ -866,7 +866,21 @@
     const d = diasParaCierre();
     $("rankCierra").textContent = d <= 1
       ? "⏰ ¡Último día! El ranking cierra hoy a la medianoche."
-      : `El ranking cierra en ${d} días · premio: 1 hamburguesa 🍔`;
+      : `El ranking cierra en ${d} días`;
+  }
+
+  /* Jugadores del mes y premios desbloqueados: mientras más jueguen, más premios. */
+  function pintarPremios(d) {
+    if (typeof d.jugadores !== "number") return;
+    $("rankMeta").hidden = false;
+    $("metaJugadores").textContent = d.jugadores.toLocaleString("es-EC");
+    $("metaPremios").textContent = `🍔 ${d.premios} ${d.premios === 1 ? "premio" : "premios"}`;
+    const sig = d.siguiente;
+    const meta = sig ? d.jugadores + sig.faltan : d.jugadores;
+    $("metaBarra").style.width = (sig ? Math.min(100, (d.jugadores / meta) * 100) : 100) + "%";
+    $("metaSiguiente").textContent = sig
+      ? `🔓 Faltan ${sig.faltan} ${sig.faltan === 1 ? "jugador" : "jugadores"} para desbloquear ${sig.premios} premios. ¡Comparte el juego!`
+      : "🔥 ¡Máximo de premios desbloqueado este mes!";
   }
 
   async function cargarRanking() {
@@ -892,12 +906,14 @@
       }));
       vacio.hidden = d.top.length > 0;
       vacio.textContent = "Nadie ha jugado este mes todavía. ¡La burger puede ser tuya! 🍔";
+      pintarPremios(d);
 
       const ganadores = $("winners");
       ganadores.hidden = !d.ganadores.length;
       $("winnersList").replaceChildren(...d.ganadores.map((g) => {
         const li = document.createElement("li");
-        li.textContent = `🏆 ${nombreMes(g.mes)} — ${g.nombre} · ${g.puntaje.toLocaleString("es-EC")}`;
+        li.textContent = `🏆 ${nombreMes(g.mes)} — ${g.nombre} · ${g.puntaje.toLocaleString("es-EC")}`
+          + (g.sorteo && g.sorteo.length ? ` · 🎟️ Sorteo: ${g.sorteo.join(", ")}` : "");
         return li;
       }));
     } catch (e) {

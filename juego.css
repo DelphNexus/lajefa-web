@@ -147,6 +147,26 @@
 
 .g-rank-sub { text-align: center; font-size: .85rem; opacity: .7; margin-bottom: 14px; }
 
+.g-meta {
+  background: var(--coral-soft);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.g-meta-top { font-weight: 700; color: var(--purple); font-variant-numeric: tabular-nums; }
+
+.g-meta-barra { height: 10px; background: var(--white); border-radius: 999px; overflow: hidden; }
+
+.g-meta-barra span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--coral), var(--coral-hot)); border-radius: 999px; transition: width .6s ease; }
+
+.g-meta-sig { font-size: .85rem; }
+
+.g-bases ul { margin: 6px 0 6px 18px; display: grid; gap: 2px; }
+
 .g-rank-list { list-style: none; counter-reset: pos; }
 
 .g-rank-list li {
