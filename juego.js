@@ -554,11 +554,11 @@
     ctx.fill();
 
     const cuadro = Math.floor(p.cuadro);
-    const bote = estado === "jugando" && p.enPiso ? Math.abs(Math.sin(p.cuadro * Math.PI / 2)) * 4 : 0;
+    const bote = estado === "jugando" && p.enPiso ? Math.abs(Math.sin(p.cuadro * Math.PI / 2)) * 2 : 0;
     const listo = muerta ? sprite("lupita-choque", 0, x - 4, y, w + 8, h)
       : estado === "inicio" ? sprite("lupita-base", 0, x, y, w, h)
       : !p.enPiso ? sprite("lupita-salto", 0, x - 6, y, w + 12, h)
-      : sprite("lupita-correr", cuadro, x, y - bote, w, h);
+      : sprite("lupita-correr", cuadro, x - 10, y - bote, w + 20, h);
 
     if (!listo) lupitaProvisional(x, y, cuadro, muerta);
     ctx.globalAlpha = 1;
