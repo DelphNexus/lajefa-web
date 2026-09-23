@@ -17,6 +17,14 @@
   input { flex: 1 1 180px; background: #fff; }
   button { background: var(--purple); color: #fff; border-color: var(--purple); font-weight: 700; cursor: pointer; }
   button.mini { padding: 6px 10px; font-size: .8rem; background: #fff; color: #b3261e; border-color: #f0c9c5; }
+  .resumen { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .resumen span { background: #fff; border: 2px solid #e6d9ee; border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .9rem; }
+  .sorteo { background: #fff; border: 2px dashed var(--coral); border-radius: 18px; padding: 16px; margin-bottom: 18px; }
+  .sorteo h2 { margin: 0 0 6px; font-size: 1.1rem; color: var(--purple); }
+  .sorteo p { margin: 0 0 10px; font-size: .9rem; }
+  .sorteo ul { margin: 0; padding-left: 18px; }
+  .sorteo li { margin: 6px 0; }
+  .sorteo a.wa { background: #25d366; color: #fff; padding: 4px 10px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: .85rem; margin-left: 6px; }
   .ganador { background: var(--purple); color: #fff; border-radius: 18px; padding: 18px; margin-bottom: 18px; }
   .ganador strong { font-size: 1.4rem; display: block; }
   .ganador a { display: inline-block; margin-top: 10px; background: #25d366; color: #fff; padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 700; }
@@ -72,6 +80,13 @@
     if (!r.ok) return salida.append(el("div", { className: "msg", textContent: d.error }));
     if (!d.top.length) return salida.append(el("div", { className: "msg", textContent: "Nadie ha guardado puntajes en " + d.mes }));
 
+    const extra = d.premios - 1;
+    salida.append(el("div", { className: "resumen" }, [
+      el("span", { textContent: `👥 ${d.jugadores} jugadores` }),
+      el("span", { textContent: `🍔 ${d.premios} ${d.premios === 1 ? "premio" : "premios"}` }),
+      el("span", { textContent: extra ? `🎟️ ${extra} por sorteo` : "🥇 Solo 1.er lugar" }),
+    ]));
+
     const g = d.top[0];
     const texto = `¡Hola ${g.nombre}! 🐶🏆 Somos La Jefa. Ganaste RUN, LUPITA, RUN! de ${d.mes} con ${g.puntaje} puntos. ¡Tu hamburguesa te espera! Escríbenos para coordinar.`;
     salida.append(el("div", { className: "ganador" }, [
@@ -84,6 +99,23 @@
         target: "_blank", rel: "noopener", textContent: "💬 Avisarle por WhatsApp",
       }),
     ]));
+
+    if (extra > 0) {
+      const caja = el("div", { className: "sorteo" }, [el("h2", { textContent: "🎟️ Sorteo del mes" })]);
+      if (d.sorteados.length) {
+        caja.append(el("p", { textContent: "Ganadores del sorteo:" }), el("ul", {}, d.sorteados.map((s) => {
+          const msg = `¡Hola ${s.nombre}! 🐶🎟️ Somos La Jefa. Ganaste el sorteo de RUN, LUPITA, RUN! de ${d.mes}. ¡Tu hamburguesa te espera! Escríbenos para coordinar.`;
+          return el("li", {}, [`${s.nombre} · ${bonito(s.telefono)}`,
+            el("a", { className: "wa", href: `https://wa.me/${s.telefono}?text=${encodeURIComponent(msg)}`, target: "_blank", rel: "noopener", textContent: "💬 Avisar" })]);
+        })));
+      } else if (d.puedeSortear) {
+        caja.append(el("p", { textContent: `Se sortean ${extra} ${extra === 1 ? "hamburguesa" : "hamburguesas"} entre todos los que jugaron, menos el 1.er lugar. Se hace una sola vez y queda guardado.` }),
+          el("button", { textContent: "🎟️ Hacer el sorteo ahora", onclick: () => sortear(d.mes) }));
+      } else {
+        caja.append(el("p", { textContent: "El sorteo se habilita cuando el mes termina." }));
+      }
+      salida.append(caja);
+    }
 
     const filas = d.top.map((f, i) => el("tr", {}, [
       el("td", { textContent: i + 1 }),
@@ -110,6 +142,17 @@
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-key": $("clave").value },
       body: JSON.stringify({ mes, telefono: f.telefono }),
+    });
+    if (!r.ok) alert((await r.json()).error);
+    cargar();
+  }
+
+  async function sortear(mes) {
+    if (!confirm(`¿Hacer el sorteo de ${mes}? Solo se puede hacer una vez.`)) return;
+    const r = await fetch("/api/admin/sortear", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": $("clave").value },
+      body: JSON.stringify({ mes }),
     });
     if (!r.ok) alert((await r.json()).error);
     cargar();

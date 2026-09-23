@@ -36,6 +36,12 @@ Es Node puro con SQLite: no necesita `npm install` ni otra base de datos.
 - Botón **💬 Avisarle por WhatsApp** al ganador, con el mensaje ya escrito.
 - Botón **Descalificar** para borrar a alguien que hizo trampa.
 - Se puede elegir un mes anterior para ver quién ganó.
+- Muestra cuántos jugadores tuvo el mes y cuántos premios se desbloquearon
+  (hasta 50: 1 · 51 a 150: 2 · más de 150: 3).
+- **🎟️ Sorteo del mes:** cuando el mes ya cerró, elige el mes anterior y toca
+  "Hacer el sorteo ahora". Sortea los premios extra entre todos los que jugaron
+  (menos el 1.er lugar). Se hace una sola vez y queda guardado, con botón para
+  avisar a cada ganador por WhatsApp.
 
 ## Qué revisa para evitar trampas
 

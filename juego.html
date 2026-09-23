@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RUN, LUPITA, RUN! — El juego de La Jefa</title>
-<meta name="description" content="Corre con Lupita, salta obstáculos y come hamburguesas. El mejor puntaje del mes gana una burger de La Jefa Darkitchen.">
+<meta name="description" content="Corre con Lupita, salta obstáculos y come hamburguesas. El mejor puntaje del mes gana una burger de La Jefa y sorteamos más entre todos los que juegan.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://lajefa.delphbrothers.com/juego.html">
 <meta property="og:site_name" content="La Jefa Darkitchen">
 <meta property="og:title" content="RUN, LUPITA, RUN! 🐶🍔">
-<meta property="og:description" content="Salta obstáculos, come burgers y gana una hamburguesa con el mejor puntaje del mes.">
+<meta property="og:description" content="Salta obstáculos, come burgers y gana hamburguesas: premio al mejor puntaje del mes y sorteos entre todos. ¡Mientras más jugadores, más premios!">
 <meta property="og:image" content="https://lajefa.delphbrothers.com/images/juego/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=15">
-<link rel="stylesheet" href="juego.css?v=3">
+<link rel="stylesheet" href="juego.css?v=4">
 <link rel="icon" href="images/brand/mascota-circulo.png" type="image/png">
 </head>
 <body class="game-body">
@@ -35,7 +35,7 @@
 
 <main class="g-main">
   <h1 class="g-title">Run, Lupita, <em>Run!</em></h1>
-  <p class="g-prize">🏆 El mejor puntaje del mes gana <strong>una hamburguesa</strong></p>
+  <p class="g-prize">🏆 El mejor puntaje gana <strong>una hamburguesa</strong> · 🎟️ ¡y sorteamos más entre todos!</p>
 
   <div class="g-stage" id="stage">
     <canvas id="game" aria-label="Juego: Lupita corre, salta obstáculos y come hamburguesas"></canvas>
@@ -59,6 +59,11 @@
     <img src="images/juego/trofeo.png" alt="" class="g-trofeo">
     <h2 id="rankTitle">Ranking de <span id="rankMes">este mes</span></h2>
     <p class="g-rank-sub" id="rankCierra"></p>
+    <div class="g-meta" id="rankMeta" hidden>
+      <p class="g-meta-top"><span id="metaJugadores">0</span> jugadores este mes · <span id="metaPremios">1 premio</span></p>
+      <div class="g-meta-barra" aria-hidden="true"><span id="metaBarra"></span></div>
+      <p class="g-meta-sig" id="metaSiguiente"></p>
+    </div>
     <ol class="g-rank-list" id="rankList"></ol>
     <p class="g-rank-empty" id="rankEmpty" hidden></p>
     <div class="g-winners" id="winners" hidden>
@@ -74,13 +79,23 @@
         al ranking hay que guardar el puntaje con un nombre y un celular de Ecuador.</li>
       <li><strong>Periodo:</strong> cada concurso dura un mes calendario, del día 1 a las
         00:00 al último día a las 23:59 (hora de Ecuador). El ranking se reinicia cada mes.</li>
-      <li><strong>Ganador:</strong> el puntaje más alto del mes. Cuenta solo el mejor
-        puntaje de cada persona. Si hay empate, gana quien lo logró primero.</li>
-      <li><strong>Premio:</strong> una hamburguesa de La Jefa por mes. No se cambia por
+      <li><strong>1.er lugar:</strong> el puntaje más alto del mes gana una hamburguesa.
+        Cuenta solo el mejor puntaje de cada persona. Si hay empate, gana quien lo logró primero.</li>
+      <li><strong>Sorteos:</strong> mientras más personas jueguen, más premios hay.
+        Cuentan las personas distintas que guardaron su puntaje en el mes:
+        <ul>
+          <li>Hasta 50 jugadores: 1 hamburguesa (1.er lugar).</li>
+          <li>De 51 a 150: 1.er lugar + 1 hamburguesa por sorteo.</li>
+          <li>Más de 150: 1.er lugar + 2 hamburguesas por sorteo.</li>
+        </ul>
+        En el sorteo participan todos los que guardaron al menos un puntaje en el mes,
+        sin importar cuánto sacaron (el 1.er lugar no entra porque ya ganó). Se hace al
+        cerrar el mes, al azar, una sola vez.</li>
+      <li><strong>Premio:</strong> una hamburguesa de La Jefa por ganador. No se cambia por
         dinero. Se entrega a domicilio junto con un pedido o se coordina por WhatsApp.</li>
-      <li><strong>Aviso:</strong> escribimos al ganador por WhatsApp en los primeros días del
-        mes siguiente. Tiene 15 días para reclamar su premio; si no responde, el premio
-        pasa al segundo lugar.</li>
+      <li><strong>Aviso:</strong> escribimos a los ganadores por WhatsApp en los primeros días del
+        mes siguiente. Tienen 15 días para reclamar su premio; si alguien no responde, su premio
+        pasa al siguiente puntaje o se vuelve a sortear.</li>
       <li><strong>Juego limpio:</strong> un celular = una persona. Si detectamos trampas
         (programas, puntajes imposibles o varios números de la misma persona), el puntaje
         se elimina.</li>
@@ -101,7 +116,7 @@
     <p class="g-record" id="newRecord" hidden>⭐ ¡Nuevo récord personal!</p>
 
     <form class="g-form" id="saveForm" novalidate hidden>
-      <p class="g-form-title">Guarda tu puntaje y compite por la burger del mes 🍔</p>
+      <p class="g-form-title">Guarda tu puntaje: compites por el 1.er lugar y entras al sorteo del mes 🎟️</p>
       <label>
         <span>Tu nombre (sale en el ranking)</span>
         <input id="fNombre" name="nombre" maxlength="16" autocomplete="given-name" placeholder="Ej: Lupe" required>
@@ -125,6 +140,6 @@
   </div>
 </div>
 
-<script src="juego.js?v=6"></script>
+<script src="juego.js?v=7"></script>
 </body>
 </html>
